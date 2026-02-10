@@ -1,0 +1,32 @@
+# Nuxt
+.nuxt
+.output
+.data
+.nitro
+.cache
+
+# Node
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Project docs (local only)
+instructions.md
+
+
+bun.lock

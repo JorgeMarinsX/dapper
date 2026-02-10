@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --color-dapper-50: #FFF3ED;
+  --color-dapper-100: #FFE4D4;
+  --color-dapper-200: #FFC5A8;
+  --color-dapper-300: #FF9E71;
+  --color-dapper-400: #FF6B35;
+  --color-dapper-500: #E85D04;
+  --color-dapper-600: #C94D00;
+  --color-dapper-700: #A13D00;
+  --color-dapper-800: #7A2F00;
+  --color-dapper-900: #5C2400;
+  --color-dapper-950: #331400;
+}
+
+:root {
+  --ui-primary: var(--color-dapper-500);
+}
+
+.dark {
+  --ui-primary: var(--color-dapper-400);
+}

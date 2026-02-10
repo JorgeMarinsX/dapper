@@ -1,0 +1,22 @@
+{
+  "name": "dapper",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev --host 0.0.0.0",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview --host 0.0.0.0",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/ui": "^4",
+    "nuxt": "^4",
+    "tailwindcss": "^4",
+    "vue": "^3",
+    "vue-router": "^4"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
