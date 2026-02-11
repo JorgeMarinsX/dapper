@@ -30,3 +30,4 @@ instructions.md
 
 
 bun.lock
+/app/generated/prisma

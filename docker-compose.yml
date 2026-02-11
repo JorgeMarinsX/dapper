@@ -6,13 +6,37 @@ services:
     ports:
       - "3000:3000"
       - "24678:24678"
+      - "5555:5555" 
     volumes:
       - .:/app
       - app_node_modules:/app/node_modules
-    command: sh -c "bun install && bun run dev"
+    command: sh -c "bun install && bunx prisma generate && bun run dev"
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=postgresql://dapper:dapper123@db:5432/dapper
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: dapper_postgres
+    environment:
+      POSTGRES_USER: dapper
+      POSTGRES_PASSWORD: dapper123
+      POSTGRES_DB: dapper
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dapper"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
 volumes:
   app_node_modules:
+  postgres_data:
