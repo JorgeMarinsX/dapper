@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Barbearia {
+  id        String   @id @default(cuid())
+  nome      String
+  cnpj      String   @unique
+  telefone  String
+  endereco  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Barbeiro {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String   @unique
+  telefone  String
+  foto      String?
+  status    StatusBarbeiro @default(DISPONIVEL)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cliente {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String?
+  telefone  String   @unique
+  foto      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Servico {
+  id        String   @id @default(cuid())
+  nome      String
+  descricao String?
+  preco     Float
+  duracao   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Agendamento {
+  id          String   @id @default(cuid())
+  dataHora    DateTime
+  status      StatusAgendamento @default(AGUARDANDO)
+  observacoes String?
+  clienteId   String
+  barbeiroId  String
+  servicoId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum StatusBarbeiro {
+  DISPONIVEL
+  OCUPADO
+  FOLGA
+  ALMOCO
+}
+
+enum StatusAgendamento {
+  AGUARDANDO
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+  NAO_COMPARECEU
+}
