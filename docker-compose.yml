@@ -14,6 +14,7 @@ services:
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://dapper:dapper123@db:5432/dapper
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       db:
         condition: service_healthy

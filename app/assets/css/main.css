@@ -2,17 +2,31 @@
 @import "@nuxt/ui";
 
 @theme {
-  --color-dapper-50: #FFF3ED;
-  --color-dapper-100: #FFE4D4;
-  --color-dapper-200: #FFC5A8;
-  --color-dapper-300: #FF9E71;
-  --color-dapper-400: #FF6B35;
-  --color-dapper-500: #E85D04;
-  --color-dapper-600: #C94D00;
-  --color-dapper-700: #A13D00;
-  --color-dapper-800: #7A2F00;
-  --color-dapper-900: #5C2400;
-  --color-dapper-950: #331400;
+  /* Barber Blue — rich royal blue, the primary UI color */
+  --color-dapper-50: #EEF2FF;
+  --color-dapper-100: #E0E7FF;
+  --color-dapper-200: #C7D2FE;
+  --color-dapper-300: #A5B4FC;
+  --color-dapper-400: #818CF8;
+  --color-dapper-500: #2B4C8C;
+  --color-dapper-600: #233F75;
+  --color-dapper-700: #1B325E;
+  --color-dapper-800: #142547;
+  --color-dapper-900: #0D1830;
+  --color-dapper-950: #070D1A;
+
+  /* Barber Red — deep crimson, distinct from error/warning reds */
+  --color-barber-red-50: #FFF1F2;
+  --color-barber-red-100: #FFE0E3;
+  --color-barber-red-200: #FFC7CC;
+  --color-barber-red-300: #FF9EA8;
+  --color-barber-red-400: #F86B78;
+  --color-barber-red-500: #DC3550;
+  --color-barber-red-600: #B91C35;
+  --color-barber-red-700: #9B162B;
+  --color-barber-red-800: #821628;
+  --color-barber-red-900: #6F1626;
+  --color-barber-red-950: #3E0610;
 }
 
 :root {
@@ -21,4 +35,27 @@
 
 .dark {
   --ui-primary: var(--color-dapper-400);
+}
+
+/* Barber pole animated stripe */
+@keyframes barber-pole {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 60px; }
+}
+
+.barber-pole {
+  width: 4px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-barber-red-500),
+    var(--color-barber-red-500) 5px,
+    white 5px,
+    white 10px,
+    var(--color-dapper-500) 10px,
+    var(--color-dapper-500) 15px,
+    white 15px,
+    white 20px
+  );
+  background-size: 30px 60px;
+  animation: barber-pole 2s linear infinite;
 }

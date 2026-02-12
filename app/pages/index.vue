@@ -54,19 +54,21 @@ const recentClients = [
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 p-6">
+    <template #header>
+      <UDashboardNavbar title="Painel" />
+    </template>
+
+    <div class="flex flex-col gap-6 p-6">
     <!-- Stats -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <UCard v-for="stat in stats" :key="stat.label">
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-sm text-muted">{{ stat.label }}</p>
-            <p class="mt-1 text-2xl font-semibold">{{ stat.value }}</p>
-            <p class="mt-1 text-xs text-muted">{{ stat.change }}</p>
-          </div>
-          <UIcon :name="stat.icon" class="size-5 text-primary" />
-        </div>
-      </UCard>
+      <StatCard
+        v-for="stat in stats"
+        :key="stat.label"
+        :label="stat.label"
+        :value="stat.value"
+        :icon="stat.icon"
+        :change="stat.change"
+      />
     </div>
 
     <!-- Main content: Appointments + Barbers -->
@@ -82,11 +84,9 @@ const recentClients = [
 
         <UTable :data="appointments" :columns="columns">
           <template #status-cell="{ row }">
-            <UBadge
+            <StatusBadge
               :label="statusMap[row.original.status].label"
               :color="statusMap[row.original.status].color"
-              variant="subtle"
-              size="sm"
             />
           </template>
         </UTable>
@@ -111,11 +111,9 @@ const recentClients = [
                 Atendendo: {{ barber.currentClient }}
               </p>
             </div>
-            <UBadge
+            <StatusBadge
               :label="barberStatusMap[barber.status].label"
               :color="barberStatusMap[barber.status].color"
-              variant="subtle"
-              size="xs"
             />
           </div>
         </div>
