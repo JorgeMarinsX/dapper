@@ -12,12 +12,15 @@
   "dependencies": {
     "@nuxt/ui": "^4",
     "@prisma/client": "6.10.0",
+    "bcrypt": "^6",
+    "jose": "^6",
     "nuxt": "^4",
     "tailwindcss": "^4",
     "vue": "^3",
     "vue-router": "^4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5",
     "prisma": "6.10.0",
     "typescript": "^5"
   }

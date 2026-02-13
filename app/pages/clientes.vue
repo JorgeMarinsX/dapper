@@ -4,106 +4,198 @@ interface Cliente {
   nome: string
   email?: string
   telefone: string
-  totalVisitas: number
-  ultimaVisita: string
-  ultimoServico: string
+  createdAt: string
+  _count?: { agendamentos: number }
 }
 
+const toast = useToast()
 const search = ref('')
 
-// Mock data
-const clientes = ref<Cliente[]>([
-  { id: '1', nome: 'Carlos Mendes', email: 'carlos@email.com', telefone: '(11) 99999-0001', totalVisitas: 24, ultimaVisita: 'Hoje, 09:00', ultimoServico: 'Corte + Barba' },
-  { id: '2', nome: 'Pedro Alves', email: 'pedro@email.com', telefone: '(11) 99999-0002', totalVisitas: 18, ultimaVisita: 'Hoje, 09:30', ultimoServico: 'Corte Degradê' },
-  { id: '3', nome: 'Bruno Costa', email: undefined, telefone: '(11) 99999-0003', totalVisitas: 12, ultimaVisita: '10/02/2026', ultimoServico: 'Barba' },
-  { id: '4', nome: 'Marcos Lima', email: 'marcos.lima@email.com', telefone: '(11) 99999-0004', totalVisitas: 31, ultimaVisita: '09/02/2026', ultimoServico: 'Corte Social' },
-  { id: '5', nome: 'André Santos', email: 'andre.s@email.com', telefone: '(11) 99999-0005', totalVisitas: 8, ultimaVisita: '08/02/2026', ultimoServico: 'Corte + Sobrancelha' },
-  { id: '6', nome: 'Felipe Rocha', email: undefined, telefone: '(11) 99999-0006', totalVisitas: 15, ultimaVisita: '07/02/2026', ultimoServico: 'Corte Degradê' },
-  { id: '7', nome: 'Gustavo Ferreira', email: 'gustavo@email.com', telefone: '(11) 99999-0007', totalVisitas: 42, ultimaVisita: '06/02/2026', ultimoServico: 'Corte + Barba' },
-  { id: '8', nome: 'Leonardo Dias', email: 'leo.dias@email.com', telefone: '(11) 99999-0008', totalVisitas: 5, ultimaVisita: '05/02/2026', ultimoServico: 'Barba' },
-  { id: '9', nome: 'João Ribeiro', email: 'joao.r@email.com', telefone: '(11) 99999-0009', totalVisitas: 27, ultimaVisita: '04/02/2026', ultimoServico: 'Corte Degradê' },
-  { id: '10', nome: 'Matheus Gomes', email: undefined, telefone: '(11) 99999-0010', totalVisitas: 3, ultimaVisita: '03/02/2026', ultimoServico: 'Barba' },
-])
+const { data: clientes, refresh } = await useFetch<Cliente[]>('/api/clientes', {
+  query: { search },
+})
 
-const filteredClientes = computed(() => {
-  if (!search.value) return clientes.value
-  const q = search.value.toLowerCase()
-  return clientes.value.filter(c =>
-    c.nome.toLowerCase().includes(q)
-    || c.telefone.includes(q)
-    || c.email?.toLowerCase().includes(q),
-  )
+const stats = computed(() => {
+  const total = clientes.value?.length || 0
+  return [
+    { label: 'Total de Clientes', value: String(total), icon: 'i-lucide-users' },
+  ]
 })
 
 const columns = [
   { accessorKey: 'nome', header: 'Nome' },
   { accessorKey: 'telefone', header: 'Telefone' },
   { accessorKey: 'email', header: 'E-mail' },
-  { accessorKey: 'totalVisitas', header: 'Visitas' },
-  { accessorKey: 'ultimaVisita', header: 'Última Visita' },
-  { accessorKey: 'ultimoServico', header: 'Último Serviço' },
+  { accessorKey: 'actions', header: '' },
 ]
 
 function getInitials(name: string): string {
-  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+  return name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
 }
 
-const stats = [
-  { label: 'Total de Clientes', value: '248', icon: 'i-lucide-users' },
-  { label: 'Novos este Mês', value: '12', icon: 'i-lucide-user-plus' },
-  { label: 'Clientes Recorrentes', value: '186', icon: 'i-lucide-user-check' },
-  { label: 'Ticket Médio', value: 'R$ 75', icon: 'i-lucide-receipt' },
-]
+// Form dialog
+const showForm = ref(false)
+const formLoading = ref(false)
+const editingId = ref<string | null>(null)
+const form = ref({ nome: '', telefone: '', email: '' })
+
+function openNew() {
+  editingId.value = null
+  form.value = { nome: '', telefone: '', email: '' }
+  showForm.value = true
+}
+
+function openEdit(cliente: Cliente) {
+  editingId.value = cliente.id
+  form.value = {
+    nome: cliente.nome,
+    telefone: cliente.telefone,
+    email: cliente.email || '',
+  }
+  showForm.value = true
+}
+
+async function handleSave() {
+  formLoading.value = true
+  try {
+    const body = {
+      nome: form.value.nome,
+      telefone: form.value.telefone,
+      email: form.value.email || undefined,
+    }
+    if (editingId.value) {
+      await $fetch(`/api/clientes/${editingId.value}`, { method: 'PATCH', body })
+      toast.add({ title: 'Cliente atualizado', color: 'success' })
+    }
+    else {
+      await $fetch('/api/clientes', { method: 'POST', body })
+      toast.add({ title: 'Cliente cadastrado', color: 'success' })
+    }
+    showForm.value = false
+    await refresh()
+  }
+  catch (e: any) {
+    toast.add({ title: e.data?.statusMessage || 'Erro ao salvar', color: 'error' })
+  }
+  finally {
+    formLoading.value = false
+  }
+}
+
+// Delete dialog
+const showDelete = ref(false)
+const deleteLoading = ref(false)
+const deletingId = ref<string | null>(null)
+
+function openDelete(cliente: Cliente) {
+  deletingId.value = cliente.id
+  showDelete.value = true
+}
+
+async function handleDelete() {
+  if (!deletingId.value) return
+  deleteLoading.value = true
+  try {
+    await $fetch(`/api/clientes/${deletingId.value}`, { method: 'DELETE' })
+    toast.add({ title: 'Cliente excluído', color: 'success' })
+    showDelete.value = false
+    await refresh()
+  }
+  catch (e: any) {
+    toast.add({ title: e.data?.statusMessage || 'Erro ao excluir', color: 'error' })
+  }
+  finally {
+    deleteLoading.value = false
+  }
+}
 </script>
 
 <template>
-  <template #header>
-    <UDashboardNavbar title="Clientes">
-      <template #actions>
-        <UButton label="Novo cliente" icon="i-lucide-user-plus" />
-      </template>
-    </UDashboardNavbar>
-  </template>
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Clientes">
+        <template #actions>
+          <UButton label="Novo cliente" icon="i-lucide-user-plus" @click="openNew" />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-  <div class="flex flex-col gap-6 p-6">
-    <!-- Stats -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard
-        v-for="stat in stats"
-        :key="stat.label"
-        :label="stat.label"
-        :value="stat.value"
-        :icon="stat.icon"
-      />
-    </div>
-
-    <!-- Search -->
-    <UCard>
-      <div class="flex items-center gap-4">
-        <UInput
-          v-model="search"
-          placeholder="Buscar por nome, telefone ou e-mail..."
-          icon="i-lucide-search"
-          class="w-80"
+    <div class="flex flex-col gap-6 p-6">
+      <!-- Stats -->
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          v-for="stat in stats"
+          :key="stat.label"
+          :label="stat.label"
+          :value="stat.value"
+          :icon="stat.icon"
         />
       </div>
-    </UCard>
 
-    <!-- Table -->
-    <UCard>
-      <UTable :data="filteredClientes" :columns="columns">
-        <template #nome-cell="{ row }">
-          <div class="flex items-center gap-3">
-            <UAvatar :text="getInitials(row.original.nome)" size="sm" />
-            <span class="font-medium">{{ row.original.nome }}</span>
-          </div>
-        </template>
-        <template #email-cell="{ row }">
-          <span :class="row.original.email ? '' : 'text-muted'">
-            {{ row.original.email || '—' }}
-          </span>
-        </template>
-      </UTable>
-    </UCard>
-  </div>
+      <!-- Search -->
+      <UCard>
+        <div class="flex items-center gap-4">
+          <UInput
+            v-model="search"
+            placeholder="Buscar por nome, telefone ou e-mail..."
+            icon="i-lucide-search"
+            class="w-80"
+          />
+        </div>
+      </UCard>
+
+      <!-- Table -->
+      <UCard v-if="clientes?.length">
+        <UTable :data="clientes" :columns="columns">
+          <template #nome-cell="{ row }">
+            <div class="flex items-center gap-3">
+              <UAvatar :text="getInitials(row.original.nome)" size="sm" />
+              <span class="font-medium">{{ row.original.nome }}</span>
+            </div>
+          </template>
+          <template #email-cell="{ row }">
+            <span :class="row.original.email ? '' : 'text-muted'">
+              {{ row.original.email || '—' }}
+            </span>
+          </template>
+          <template #actions-cell="{ row }">
+            <UDropdownMenu
+              :items="[[
+                { label: 'Editar', icon: 'i-lucide-pencil', click: () => openEdit(row.original) },
+                { label: 'Excluir', icon: 'i-lucide-trash-2', color: 'error' as const, click: () => openDelete(row.original) },
+              ]]"
+            >
+              <UButton icon="i-lucide-ellipsis-vertical" variant="ghost" color="neutral" size="xs" />
+            </UDropdownMenu>
+          </template>
+        </UTable>
+      </UCard>
+
+      <UCard v-else>
+        <div class="py-8 text-center text-muted">
+          <UIcon name="i-lucide-users" class="mx-auto mb-2 size-8" />
+          <p>Nenhum cliente cadastrado</p>
+          <UButton label="Cadastrar primeiro cliente" variant="link" class="mt-2" @click="openNew" />
+        </div>
+      </UCard>
+    </div>
+
+    <!-- Form dialog -->
+    <FormDialog v-model="showForm" :title="editingId ? 'Editar cliente' : 'Novo cliente'" :loading="formLoading" @save="handleSave">
+      <div class="flex flex-col gap-4">
+        <UFormField label="Nome" required>
+          <UInput v-model="form.nome" placeholder="Nome completo" />
+        </UFormField>
+        <UFormField label="Telefone" required>
+          <UInput v-model="form.telefone" placeholder="(11) 99999-0000" />
+        </UFormField>
+        <UFormField label="E-mail">
+          <UInput v-model="form.email" type="email" placeholder="email@exemplo.com" />
+        </UFormField>
+      </div>
+    </FormDialog>
+
+    <!-- Delete confirmation -->
+    <ConfirmDialog v-model="showDelete" :loading="deleteLoading" @confirm="handleDelete" />
+  </UDashboardPanel>
 </template>

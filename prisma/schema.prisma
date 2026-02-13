@@ -10,54 +10,139 @@ datasource db {
 model Barbearia {
   id        String   @id @default(cuid())
   nome      String
+  email     String   @unique
+  senha     String
   cnpj      String   @unique
   telefone  String
-  endereco  String
+  endereco  String   // Legal/billing address
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  unidades     Unidade[]
+  barbeiros    Barbeiro[]
+  clientes     Cliente[]
+  servicos     Servico[]
+  agendamentos Agendamento[]
+  notificacoes ConfiguracaoNotificacao?
+}
+
+model Unidade {
+  id          String   @id @default(cuid())
+  nome        String
+  endereco    String
+  telefone    String?
+  barbeariaId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  barbearia    Barbearia            @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  barbeiros    Barbeiro[]
+  agendamentos Agendamento[]
+  horarios     HorarioFuncionamento[]
+
+  @@index([barbeariaId])
 }
 
 model Barbeiro {
-  id        String   @id @default(cuid())
-  nome      String
-  email     String   @unique
-  telefone  String
-  foto      String?
-  status    StatusBarbeiro @default(DISPONIVEL)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String         @id @default(cuid())
+  nome        String
+  email       String         @unique
+  telefone    String
+  foto        String?
+  status      StatusBarbeiro @default(DISPONIVEL)
+  barbeariaId String
+  unidadeId   String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  barbearia    Barbearia     @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  unidade      Unidade       @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
+  agendamentos Agendamento[]
+
+  @@index([barbeariaId])
+  @@index([unidadeId])
 }
 
 model Cliente {
-  id        String   @id @default(cuid())
-  nome      String
-  email     String?
-  telefone  String   @unique
-  foto      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  nome        String
+  email       String?
+  telefone    String
+  foto        String?
+  barbeariaId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  barbearia    Barbearia     @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  agendamentos Agendamento[]
+
+  @@unique([barbeariaId, telefone])
+  @@index([barbeariaId])
 }
 
 model Servico {
-  id        String   @id @default(cuid())
-  nome      String
-  descricao String?
-  preco     Float
-  duracao   Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  nome        String
+  descricao   String?
+  preco       Float
+  duracao     Int
+  barbeariaId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  barbearia    Barbearia     @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  agendamentos Agendamento[]
+
+  @@index([barbeariaId])
 }
 
 model Agendamento {
-  id          String   @id @default(cuid())
+  id          String            @id @default(cuid())
   dataHora    DateTime
   status      StatusAgendamento @default(AGUARDANDO)
   observacoes String?
   clienteId   String
   barbeiroId  String
   servicoId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  barbeariaId String
+  unidadeId   String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  cliente   Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  barbeiro  Barbeiro  @relation(fields: [barbeiroId], references: [id], onDelete: Cascade)
+  servico   Servico   @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+  barbearia Barbearia @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  unidade   Unidade   @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
+
+  @@index([barbeariaId])
+  @@index([unidadeId])
+  @@index([clienteId])
+  @@index([barbeiroId])
+  @@index([dataHora])
+}
+
+model HorarioFuncionamento {
+  id        String  @id @default(cuid())
+  diaSemana Int     // 0=domingo, 1=segunda ... 6=sábado
+  aberto    Boolean @default(true)
+  inicio    String  @default("09:00")
+  fim       String  @default("19:00")
+  unidadeId String
+
+  unidade Unidade @relation(fields: [unidadeId], references: [id], onDelete: Cascade)
+
+  @@unique([unidadeId, diaSemana])
+}
+
+model ConfiguracaoNotificacao {
+  id               String  @id @default(cuid())
+  emailConfirmacao Boolean @default(true)
+  smsLembrete      Boolean @default(true)
+  antecedencia     Int     @default(2) // hours
+  barbeariaId      String  @unique
+
+  barbearia Barbearia @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
 }
 
 enum StatusBarbeiro {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { user, logout } = useAuth()
 
 const collapsed = ref(false)
 
@@ -14,6 +15,11 @@ const navItems: NavigationMenuItem[] = [
     to: '/agendamentos',
   },
   {
+    label: 'Barbeiros',
+    icon: 'i-lucide-user-round',
+    to: '/barbeiros',
+  },
+  {
     label: 'Clientes',
     icon: 'i-lucide-users',
     to: '/clientes',
@@ -22,6 +28,11 @@ const navItems: NavigationMenuItem[] = [
     label: 'Serviços',
     icon: 'i-lucide-scissors',
     to: '/servicos',
+  },
+  {
+    label: 'Unidades',
+    icon: 'i-lucide-map-pin',
+    to: '/unidades',
   },
 ]
 
@@ -33,12 +44,18 @@ const bottomNavItems: NavigationMenuItem[] = [
   },
 ]
 
+const shopName = computed(() => user.value?.nome || 'Barbearia')
+const shopInitials = computed(() => {
+  if (!user.value?.nome) return 'BB'
+  return user.value.nome.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
+})
+
 const shopMenuItems = [
   [
     { label: 'Configurações', icon: 'i-lucide-settings', to: '/configuracoes' },
   ],
   [
-    { label: 'Sair', icon: 'i-lucide-log-out' },
+    { label: 'Sair', icon: 'i-lucide-log-out', click: () => logout() },
   ],
 ]
 </script>
@@ -61,8 +78,8 @@ const shopMenuItems = [
       <div class="flex flex-col gap-3">
         <UDropdownMenu :items="shopMenuItems">
           <UButton
-            :label="collapsed ? undefined : 'Barbearia Exemplo'"
-            :avatar="{ text: 'BE' }"
+            :label="collapsed ? undefined : shopName"
+            :avatar="{ text: shopInitials }"
             color="neutral"
             variant="ghost"
             class="w-full"

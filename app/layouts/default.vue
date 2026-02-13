@@ -1,8 +1,6 @@
 <template>
   <UDashboardGroup>
     <Sidebar />
-    <UDashboardPanel>
-      <slot />
-    </UDashboardPanel>
+    <slot />
   </UDashboardGroup>
 </template>
