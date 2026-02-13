@@ -46,29 +46,29 @@ async function handleSubmit() {
           <UAlert v-if="error" color="error" :title="error" icon="i-lucide-alert-circle" />
 
           <UFormField label="Nome da barbearia">
-            <UInput v-model="form.nome" placeholder="Barbearia do João" required autofocus class="w-full"/>
+            <UInput v-model="form.nome" placeholder="Barbearia do João" required autofocus :disabled="loading" class="w-full"/>
           </UFormField>
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <UFormField label="E-mail">
-              <UInput v-model="form.email" type="email" placeholder="seu@email.com" required />
+              <UInput v-model="form.email" type="email" placeholder="seu@email.com" required :disabled="loading" />
             </UFormField>
             <UFormField label="Senha">
-              <UInput v-model="form.senha" type="password" placeholder="Mínimo 6 caracteres" required />
+              <UInput v-model="form.senha" type="password" placeholder="Mínimo 6 caracteres" required :disabled="loading" />
             </UFormField>
           </div>
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <UFormField label="CNPJ">
-              <UInput v-model="form.cnpj" placeholder="00.000.000/0001-00" required />
+              <UInput v-model="form.cnpj" placeholder="00.000.000/0001-00" required :disabled="loading" />
             </UFormField>
             <UFormField label="Telefone">
-              <UInput v-model="form.telefone" placeholder="(11) 99999-0000" required />
+              <UInput v-model="form.telefone" placeholder="(11) 99999-0000" required :disabled="loading" />
             </UFormField>
           </div>
 
           <UFormField label="Endereço">
-            <UInput v-model="form.endereco" placeholder="Rua, número - Bairro, Cidade - UF" required class="w-full"/>
+            <UInput v-model="form.endereco" placeholder="Rua, número - Bairro, Cidade - UF" required :disabled="loading" class="w-full"/>
           </UFormField>
 
           <UButton

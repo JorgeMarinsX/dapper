@@ -182,14 +182,13 @@ function clearFilters() {
 </script>
 
 <template>
+  <div>
   <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Agendamentos">
-        <template #actions>
-          <UButton label="Novo agendamento" icon="i-lucide-plus" @click="openNew" />
-        </template>
-      </UDashboardNavbar>
-    </template>
+    <UDashboardNavbar title="Agendamentos">
+      <template #right>
+        <UButton label="Novo agendamento" icon="i-lucide-plus" @click="openNew" />
+      </template>
+    </UDashboardNavbar>
 
     <div class="flex flex-col gap-6 p-6">
       <!-- Stats -->
@@ -357,4 +356,5 @@ function clearFilters() {
     <!-- Delete confirmation -->
     <ConfirmDialog v-model="showDelete" :loading="deleteLoading" @confirm="handleDelete" />
   </UDashboardPanel>
+  </div>
 </template>

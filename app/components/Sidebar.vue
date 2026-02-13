@@ -42,6 +42,11 @@ const bottomNavItems: NavigationMenuItem[] = [
     icon: 'i-lucide-settings',
     to: '/configuracoes',
   },
+  {
+    label: 'Sair',
+    icon: 'i-lucide-log-out',
+    onSelect: () => logout(),
+  },
 ]
 
 const shopName = computed(() => user.value?.nome || 'Barbearia')
@@ -55,7 +60,7 @@ const shopMenuItems = [
     { label: 'Configurações', icon: 'i-lucide-settings', to: '/configuracoes' },
   ],
   [
-    { label: 'Sair', icon: 'i-lucide-log-out', click: () => logout() },
+    { label: 'Sair', icon: 'i-lucide-log-out', onSelect: () => logout() },
   ],
 ]
 </script>

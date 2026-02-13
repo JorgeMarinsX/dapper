@@ -45,6 +45,7 @@ async function handleSubmit() {
               placeholder="seu@email.com"
               required
               autofocus
+              :disabled="loading"
               class="w-full"
             />
           </UFormField>
@@ -55,6 +56,7 @@ async function handleSubmit() {
               type="password"
               placeholder="Sua senha"
               required
+              :disabled="loading"
               class="w-full"
             />
           </UFormField>

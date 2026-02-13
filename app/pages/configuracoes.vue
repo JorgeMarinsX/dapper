@@ -86,10 +86,9 @@ async function saveNotificacoes() {
 </script>
 
 <template>
+  <div>
   <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Configurações" />
-    </template>
+    <UDashboardNavbar title="Configurações" />
 
     <div class="flex flex-col gap-6 p-6 max-w-4xl">
       <!-- Dados da Barbearia -->
@@ -172,4 +171,5 @@ async function saveNotificacoes() {
       </UCard>
     </div>
   </UDashboardPanel>
+  </div>
 </template>

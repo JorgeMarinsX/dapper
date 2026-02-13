@@ -153,14 +153,13 @@ async function handleSaveHorarios() {
 </script>
 
 <template>
+  <div>
   <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Unidades">
-        <template #actions>
-          <UButton label="Nova unidade" icon="i-lucide-plus" @click="openNew" />
-        </template>
-      </UDashboardNavbar>
-    </template>
+    <UDashboardNavbar title="Unidades">
+      <template #right>
+        <UButton label="Nova unidade" icon="i-lucide-plus" @click="openNew" />
+      </template>
+    </UDashboardNavbar>
 
     <div class="flex flex-col gap-6 p-6">
       <!-- Stats -->
@@ -256,4 +255,5 @@ async function handleSaveHorarios() {
     <!-- Delete confirmation -->
     <ConfirmDialog v-model="showDelete" :loading="deleteLoading" @confirm="handleDelete" />
   </UDashboardPanel>
+  </div>
 </template>

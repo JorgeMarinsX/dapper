@@ -54,10 +54,9 @@ function getInitials(name: string): string {
 </script>
 
 <template>
+  <div>
   <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Painel" />
-    </template>
+    <UDashboardNavbar title="Painel" />
 
     <div class="flex flex-col gap-6 p-6">
       <!-- Stats -->
@@ -139,4 +138,5 @@ function getInitials(name: string): string {
       </div>
     </div>
   </UDashboardPanel>
+  </div>
 </template>

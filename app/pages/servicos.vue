@@ -117,14 +117,13 @@ async function handleDelete() {
 </script>
 
 <template>
+  <div>
   <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Serviços">
-        <template #actions>
-          <UButton label="Novo serviço" icon="i-lucide-plus" @click="openNew" />
-        </template>
-      </UDashboardNavbar>
-    </template>
+    <UDashboardNavbar title="Serviços">
+      <template #right>
+        <UButton label="Novo serviço" icon="i-lucide-plus" @click="openNew" />
+      </template>
+    </UDashboardNavbar>
 
     <div class="flex flex-col gap-6 p-6">
       <!-- Stats -->
@@ -209,4 +208,5 @@ async function handleDelete() {
     <!-- Delete confirmation -->
     <ConfirmDialog v-model="showDelete" :loading="deleteLoading" @confirm="handleDelete" />
   </UDashboardPanel>
+  </div>
 </template>
