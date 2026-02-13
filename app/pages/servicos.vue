@@ -10,7 +10,7 @@ interface Servico {
 const toast = useToast()
 const search = ref('')
 
-const { data: servicos, refresh } = await useFetch<Servico[]>('/api/servicos', {
+const { data: servicos, refresh } = useFetch<Servico[]>('/api/servicos', {
   query: { search },
 })
 

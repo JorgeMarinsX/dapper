@@ -18,19 +18,15 @@ const toast = useToast()
 const search = ref('')
 const unidadeFilter = ref('')
 
-const { data: barbeiros, refresh } = await useFetch<Barbeiro[]>('/api/barbeiros', {
-  query: computed(() => ({
-    ...(search.value && { search: search.value }),
-    ...(unidadeFilter.value && { unidade: unidadeFilter.value }),
-  })),
+const { data: barbeiros, refresh } = useFetch<Barbeiro[]>('/api/barbeiros', {
+  query: { search, unidade: unidadeFilter },
 })
 
-const { data: unidades } = await useFetch<Unidade[]>('/api/unidades')
+const { data: unidades } = useFetch<Unidade[]>('/api/unidades')
 
-const unidadeOptions = computed(() => [
-  { label: 'Todas as unidades', value: '' },
-  ...(unidades.value || []).map(u => ({ label: u.nome, value: u.id })),
-])
+const unidadeOptions = computed(() =>
+  (unidades.value || []).map(u => ({ label: u.nome, value: u.id })),
+)
 
 const statusMap: Record<string, { label: string; color: 'success' | 'warning' | 'neutral' | 'info' }> = {
   DISPONIVEL: { label: 'Disponível', color: 'success' },
@@ -170,7 +166,7 @@ async function handleDelete() {
             :items="unidadeOptions"
             value-key="value"
             label-key="label"
-            placeholder="Unidade"
+            placeholder="Todas as unidades"
             class="w-56"
           />
         </div>

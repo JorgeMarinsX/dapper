@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const today = new Date().toISOString().slice(0, 10)
 
-const { data: agendamentos } = await useFetch<any[]>('/api/agendamentos', {
+const { data: agendamentos } = useFetch<any[]>('/api/agendamentos', {
   query: { date: today },
 })
 
-const { data: barbeiros } = await useFetch<any[]>('/api/barbeiros')
-const { data: clientes } = await useFetch<any[]>('/api/clientes')
-const { data: servicos } = await useFetch<any[]>('/api/servicos')
+const { data: barbeiros } = useFetch<any[]>('/api/barbeiros')
+const { data: clientes } = useFetch<any[]>('/api/clientes')
+const { data: servicos } = useFetch<any[]>('/api/servicos')
 
 const statusMap: Record<string, { label: string; color: 'success' | 'warning' | 'info' | 'neutral' | 'error' }> = {
   AGUARDANDO: { label: 'Aguardando', color: 'neutral' },

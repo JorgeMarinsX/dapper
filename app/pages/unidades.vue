@@ -17,7 +17,7 @@ interface Unidade {
 
 const toast = useToast()
 
-const { data: unidades, refresh } = await useFetch<Unidade[]>('/api/unidades')
+const { data: unidades, refresh } = useFetch<Unidade[]>('/api/unidades')
 
 const diasSemana: Record<number, string> = {
   0: 'Domingo',

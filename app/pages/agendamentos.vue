@@ -23,7 +23,6 @@ const statusMap: Record<string, { label: string; color: 'success' | 'warning' | 
 }
 
 const statusOptions = [
-  { label: 'Todos', value: '' },
   { label: 'Aguardando', value: 'AGUARDANDO' },
   { label: 'Em andamento', value: 'EM_ANDAMENTO' },
   { label: 'Concluído', value: 'CONCLUIDO' },
@@ -31,28 +30,24 @@ const statusOptions = [
   { label: 'Não compareceu', value: 'NAO_COMPARECEU' },
 ]
 
+// Filters
 const search = ref('')
 const statusFilter = ref('')
 const selectedDate = ref(new Date().toISOString().slice(0, 10))
 const unidadeFilter = ref('')
 
-const { data: agendamentos, refresh } = await useFetch<Agendamento[]>('/api/agendamentos', {
-  query: computed(() => ({
-    ...(search.value && { search: search.value }),
-    ...(statusFilter.value && { status: statusFilter.value }),
-    ...(selectedDate.value && { date: selectedDate.value }),
-    ...(unidadeFilter.value && { unidade: unidadeFilter.value }),
-  })),
+// Data fetching — reactive query watches refs automatically
+const { data: agendamentos, refresh } = useFetch<Agendamento[]>('/api/agendamentos', {
+  query: { search, status: statusFilter, date: selectedDate, unidade: unidadeFilter },
 })
 
-const { data: unidades } = await useFetch<SelectItem[]>('/api/unidades')
-const { data: clientes } = await useFetch<SelectItem[]>('/api/clientes')
-const { data: servicos } = await useFetch<SelectItem[]>('/api/servicos')
+const { data: unidades } = useFetch<SelectItem[]>('/api/unidades')
+const { data: clientes } = useFetch<SelectItem[]>('/api/clientes')
+const { data: servicos } = useFetch<SelectItem[]>('/api/servicos')
 
-const unidadeFilterOptions = computed(() => [
-  { label: 'Todas as unidades', value: '' },
-  ...(unidades.value || []).map(u => ({ label: u.nome, value: u.id })),
-])
+const unidadeFilterOptions = computed(() =>
+  (unidades.value || []).map((u: SelectItem) => ({ label: u.nome, value: u.id })),
+)
 
 function formatHorario(dataHora: string): string {
   return new Date(dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
@@ -77,9 +72,9 @@ const stats = computed(() => {
   const list = agendamentos.value || []
   return [
     { label: 'Total', value: String(list.length), icon: 'i-lucide-calendar' },
-    { label: 'Concluídos', value: String(list.filter(a => a.status === 'CONCLUIDO').length), icon: 'i-lucide-calendar-check' },
-    { label: 'Aguardando', value: String(list.filter(a => a.status === 'AGUARDANDO').length), icon: 'i-lucide-clock' },
-    { label: 'Cancelados', value: String(list.filter(a => a.status === 'CANCELADO').length), icon: 'i-lucide-calendar-x' },
+    { label: 'Concluídos', value: String(list.filter((a: Agendamento) => a.status === 'CONCLUIDO').length), icon: 'i-lucide-calendar-check' },
+    { label: 'Aguardando', value: String(list.filter((a: Agendamento) => a.status === 'AGUARDANDO').length), icon: 'i-lucide-clock' },
+    { label: 'Cancelados', value: String(list.filter((a: Agendamento) => a.status === 'CANCELADO').length), icon: 'i-lucide-calendar-x' },
   ]
 })
 
@@ -96,16 +91,23 @@ const form = ref({
 })
 
 // Barbeiros filtered by selected unit
-const { data: barbeirosForUnit, refresh: refreshBarbeiros } = await useFetch<{ id: string; nome: string }[]>('/api/barbeiros', {
-  query: computed(() => ({
-    ...(form.value.unidadeId && { unidade: form.value.unidadeId }),
-  })),
-  immediate: false,
-})
+const barbeirosForUnit = ref<{ id: string; nome: string }[]>([])
 
 watch(() => form.value.unidadeId, async (val) => {
   form.value.barbeiroId = ''
-  if (val) await refreshBarbeiros()
+  if (val) {
+    try {
+      barbeirosForUnit.value = await $fetch<{ id: string; nome: string }[]>('/api/barbeiros', {
+        query: { unidade: val },
+      })
+    }
+    catch {
+      barbeirosForUnit.value = []
+    }
+  }
+  else {
+    barbeirosForUnit.value = []
+  }
 })
 
 function openNew() {
@@ -215,7 +217,7 @@ function clearFilters() {
             :items="statusOptions"
             value-key="value"
             label-key="label"
-            placeholder="Status"
+            placeholder="Todos os status"
             class="w-48"
           />
           <USelect
@@ -223,7 +225,7 @@ function clearFilters() {
             :items="unidadeFilterOptions"
             value-key="value"
             label-key="label"
-            placeholder="Unidade"
+            placeholder="Todas as unidades"
             class="w-48"
           />
           <UInput
@@ -305,7 +307,7 @@ function clearFilters() {
         <UFormField label="Unidade" required>
           <USelect
             v-model="form.unidadeId"
-            :items="(unidades || []).map(u => ({ label: u.nome, value: u.id }))"
+            :items="(unidades || []).map((u: SelectItem) => ({ label: u.nome, value: u.id }))"
             value-key="value"
             label-key="label"
             placeholder="Selecione a unidade"
@@ -315,7 +317,7 @@ function clearFilters() {
           <UFormField label="Cliente" required>
             <USelect
               v-model="form.clienteId"
-              :items="(clientes || []).map(c => ({ label: c.nome, value: c.id }))"
+              :items="(clientes || []).map((c: SelectItem) => ({ label: c.nome, value: c.id }))"
               value-key="value"
               label-key="label"
               placeholder="Selecione o cliente"
@@ -324,7 +326,7 @@ function clearFilters() {
           <UFormField label="Barbeiro" required>
             <USelect
               v-model="form.barbeiroId"
-              :items="(barbeirosForUnit || []).map(b => ({ label: b.nome, value: b.id }))"
+              :items="barbeirosForUnit.map((b: { id: string; nome: string }) => ({ label: b.nome, value: b.id }))"
               value-key="value"
               label-key="label"
               placeholder="Selecione o barbeiro"
@@ -336,7 +338,7 @@ function clearFilters() {
           <UFormField label="Serviço" required>
             <USelect
               v-model="form.servicoId"
-              :items="(servicos || []).map(s => ({ label: s.nome, value: s.id }))"
+              :items="(servicos || []).map((s: SelectItem) => ({ label: s.nome, value: s.id }))"
               value-key="value"
               label-key="label"
               placeholder="Selecione o serviço"

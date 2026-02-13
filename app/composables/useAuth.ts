@@ -15,7 +15,8 @@ export function useAuth() {
 
   async function fetchUser() {
     try {
-      user.value = await $fetch<Barbearia>('/api/auth/me')
+      const headers = import.meta.server ? useRequestHeaders(['cookie']) : undefined
+      user.value = await $fetch<Barbearia>('/api/auth/me', { headers })
     }
     catch {
       user.value = null

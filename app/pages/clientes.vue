@@ -11,7 +11,7 @@ interface Cliente {
 const toast = useToast()
 const search = ref('')
 
-const { data: clientes, refresh } = await useFetch<Cliente[]>('/api/clientes', {
+const { data: clientes, refresh } = useFetch<Cliente[]>('/api/clientes', {
   query: { search },
 })
 

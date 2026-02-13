@@ -16,11 +16,11 @@ const emit = defineEmits<{ confirm: [] }>()
       <h2 class="font-semibold">{{ title || 'Confirmar exclusão' }}</h2>
     </template>
 
-    <div class="p-4">
+    <template #body>
       <p class="text-sm text-muted">
         {{ description || 'Tem certeza que deseja excluir? Esta ação não pode ser desfeita.' }}
       </p>
-    </div>
+    </template>
 
     <template #footer>
       <div class="flex justify-end gap-2">

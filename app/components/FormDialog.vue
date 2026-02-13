@@ -14,9 +14,9 @@ const emit = defineEmits<{ save: [] }>()
       <h2 class="font-semibold">{{ title }}</h2>
     </template>
 
-    <div class="p-4">
+    <template #body>
       <slot />
-    </div>
+    </template>
 
     <template #footer>
       <div class="flex justify-end gap-2">

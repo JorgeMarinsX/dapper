@@ -44,7 +44,7 @@ interface NotificacaoConfig {
   antecedencia: number
 }
 
-const { data: notificacoesData } = await useFetch<NotificacaoConfig>('/api/barbearia/notificacoes')
+const { data: notificacoesData } = useFetch<NotificacaoConfig>('/api/barbearia/notificacoes')
 
 const notificacoes = ref({
   emailConfirmacao: true,

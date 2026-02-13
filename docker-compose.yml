@@ -5,8 +5,7 @@ services:
       target: dev
     ports:
       - "3000:3000"
-      - "24678:24678"
-      - "5555:5555" 
+      - "5555:5555"
     volumes:
       - .:/app
       - app_node_modules:/app/node_modules

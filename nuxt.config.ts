@@ -3,7 +3,9 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui'],
 
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+  },
 
   css: ['~/assets/css/main.css'],
 
@@ -15,11 +17,14 @@ export default defineNuxtConfig({
   vite: {
     server: {
       hmr: {
-        port: 24678,
-        clientPort: 24678,
+        protocol: 'ws',
+        host: 'localhost',
+        port: 3000,
+        clientPort: 3000,
       },
       watch: {
         usePolling: true,
+        interval: 1000,
       },
     },
   },
