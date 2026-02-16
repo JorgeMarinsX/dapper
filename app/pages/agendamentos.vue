@@ -1,146 +1,27 @@
 <script setup lang="ts">
-interface Agendamento {
-  id: string
-  dataHora: string
-  status: string
-  observacoes?: string
-  cliente: { id: string; nome: string }
-  barbeiro: { id: string; nome: string }
-  servico: { id: string; nome: string; preco: number }
-  unidade: { id: string; nome: string }
-}
-
-interface SelectItem { id: string; nome: string }
-
-// Filters
-const search = ref('')
-const statusFilter = ref('')
-const selectedDate = ref(getTodayISO())
-const unidadeFilter = ref('')
-
-// Data fetching — reactive query watches refs automatically
-const { data: agendamentos, refresh } = useFetch<Agendamento[]>('/api/agendamentos', {
-  query: { search, status: statusFilter, date: selectedDate, unidade: unidadeFilter },
-})
-
-const { data: unidades } = useFetch<SelectItem[]>('/api/unidades')
-const { data: clientes } = useFetch<SelectItem[]>('/api/clientes')
-const { data: servicos } = useFetch<SelectItem[]>('/api/servicos')
-
-const unidadeFilterOptions = computed(() =>
-  (unidades.value || []).map((u: SelectItem) => ({ label: u.nome, value: u.id })),
-)
-
-const columns = [
-  { accessorKey: 'horario', header: 'Horário' },
-  { accessorKey: 'data', header: 'Data' },
-  { accessorKey: 'cliente', header: 'Cliente' },
-  { accessorKey: 'barbeiro', header: 'Barbeiro' },
-  { accessorKey: 'servico', header: 'Serviço' },
-  { accessorKey: 'unidade', header: 'Unidade' },
-  { accessorKey: 'status', header: 'Status' },
-  { accessorKey: 'actions', header: '' },
-]
-
-const stats = computed(() => {
-  const list = agendamentos.value || []
-  return [
-    { label: 'Total', value: String(list.length), icon: 'i-lucide-calendar' },
-    { label: 'Concluídos', value: String(list.filter((a: Agendamento) => a.status === 'CONCLUIDO').length), icon: 'i-lucide-calendar-check' },
-    { label: 'Aguardando', value: String(list.filter((a: Agendamento) => a.status === 'AGUARDANDO').length), icon: 'i-lucide-clock' },
-    { label: 'Cancelados', value: String(list.filter((a: Agendamento) => a.status === 'CANCELADO').length), icon: 'i-lucide-calendar-x' },
-  ]
-})
-
-// Form dialog
-const showForm = ref(false)
-const form = ref({
-  unidadeId: '',
-  clienteId: '',
-  barbeiroId: '',
-  servicoId: '',
-  dataHora: '',
-  observacoes: '',
-})
-
-// Barbeiros filtered by selected unit
-const barbeirosForUnit = ref<{ id: string; nome: string }[]>([])
-
-watch(() => form.value.unidadeId, async (val) => {
-  form.value.barbeiroId = ''
-  if (val) {
-    try {
-      barbeirosForUnit.value = await $fetch<{ id: string; nome: string }[]>('/api/barbeiros', {
-        query: { unidade: val },
-      })
-    }
-    catch {
-      barbeirosForUnit.value = []
-    }
-  }
-  else {
-    barbeirosForUnit.value = []
-  }
-})
-
-function openNew() {
-  form.value = { unidadeId: '', clienteId: '', barbeiroId: '', servicoId: '', dataHora: '', observacoes: '' }
-  showForm.value = true
-}
-
-const { loading: formLoading, execute: executeCreate } = useApiMutation({
-  successMessage: 'Agendamento criado',
-  errorMessage: 'Erro ao criar agendamento',
-})
-
-async function handleSave() {
-  const result = await executeCreate('/api/agendamentos', {
-    method: 'POST',
-    body: form.value,
-  })
-  if (result !== null) {
-    showForm.value = false
-    await refresh()
-  }
-}
-
-// Status update
-const { execute: executeUpdateStatus } = useApiMutation({
-  successMessage: 'Status atualizado',
-  errorMessage: 'Erro ao atualizar',
-})
-
-async function updateStatus(agendamento: Agendamento, newStatus: string) {
-  const result = await executeUpdateStatus(`/api/agendamentos/${agendamento.id}`, {
-    method: 'PATCH',
-    body: { status: newStatus },
-  })
-  if (result !== null) {
-    await refresh()
-  }
-}
-
-// Delete dialog
-const deleteDialog = useDeleteDialog<Agendamento>()
-const { loading: deleteLoading, remove } = useDeleteMutation('/api/agendamentos', {
-  successMessage: 'Agendamento excluído',
-  onSuccess: async () => {
-    deleteDialog.close()
-    await refresh()
-  },
-})
-
-async function handleDelete() {
-  if (!deleteDialog.deletingId.value) return
-  await remove(deleteDialog.deletingId.value)
-}
-
-function clearFilters() {
-  search.value = ''
-  statusFilter.value = ''
-  selectedDate.value = ''
-  unidadeFilter.value = ''
-}
+const {
+  agendamentos,
+  stats,
+  search,
+  statusFilter,
+  selectedDate,
+  unidadeFilter,
+  unidadeOptions,
+  hasFilters,
+  clearFilters,
+  showForm,
+  form,
+  formLoading,
+  openNew,
+  handleSave,
+  clienteOptions,
+  servicoOptions,
+  barbeirosOptions,
+  updateStatus,
+  deleteDialog,
+  deleteLoading,
+  handleDelete,
+} = useAgendamentos()
 </script>
 
 <template>
@@ -184,7 +65,7 @@ function clearFilters() {
             />
             <USelect
               v-model="unidadeFilter"
-              :items="unidadeFilterOptions"
+              :items="unidadeOptions"
               value-key="value"
               label-key="label"
               placeholder="Todas as unidades"
@@ -197,7 +78,7 @@ function clearFilters() {
               size="xl"
             />
             <UButton
-              v-if="search || statusFilter || selectedDate || unidadeFilter"
+              v-if="hasFilters"
               label="Limpar filtros"
               variant="ghost"
               color="neutral"
@@ -209,7 +90,7 @@ function clearFilters() {
 
         <!-- Table -->
         <UCard v-if="agendamentos?.length">
-          <UTable :data="agendamentos" :columns="columns">
+          <UTable :data="agendamentos" :columns="COLUMNS.agendamentos">
             <template #horario-cell="{ row }">
               {{ formatHorario(row.original.dataHora) }}
             </template>
@@ -270,7 +151,7 @@ function clearFilters() {
           <UFormField label="Unidade" required>
             <USelect
               v-model="form.unidadeId"
-              :items="(unidades || []).map((u: SelectItem) => ({ label: u.nome, value: u.id }))"
+              :items="unidadeOptions"
               value-key="value"
               label-key="label"
               placeholder="Selecione a unidade"
@@ -280,7 +161,7 @@ function clearFilters() {
             <UFormField label="Cliente" required>
               <USelect
                 v-model="form.clienteId"
-                :items="(clientes || []).map((c: SelectItem) => ({ label: c.nome, value: c.id }))"
+                :items="clienteOptions"
                 value-key="value"
                 label-key="label"
                 placeholder="Selecione o cliente"
@@ -289,7 +170,7 @@ function clearFilters() {
             <UFormField label="Barbeiro" required>
               <USelect
                 v-model="form.barbeiroId"
-                :items="barbeirosForUnit.map((b: { id: string; nome: string }) => ({ label: b.nome, value: b.id }))"
+                :items="barbeirosOptions"
                 value-key="value"
                 label-key="label"
                 placeholder="Selecione o barbeiro"
@@ -301,7 +182,7 @@ function clearFilters() {
             <UFormField label="Serviço" required>
               <USelect
                 v-model="form.servicoId"
-                :items="(servicos || []).map((s: SelectItem) => ({ label: s.nome, value: s.id }))"
+                :items="servicoOptions"
                 value-key="value"
                 label-key="label"
                 placeholder="Selecione o serviço"

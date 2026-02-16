@@ -1,77 +1,20 @@
 <script setup lang="ts">
-interface Cliente {
-  id: string
-  nome: string
-  email?: string
-  telefone: string
-  createdAt: string
-  _count?: { agendamentos: number }
-}
-
-interface ClienteForm {
-  nome: string
-  telefone: string
-  email: string
-}
-
-const search = ref('')
-
-const { data: clientes, refresh } = useFetch<Cliente[]>('/api/clientes', {
-  query: { search },
-})
-
-const stats = computed(() => {
-  const total = clientes.value?.length || 0
-  return [
-    { label: 'Total de Clientes', value: String(total), icon: 'i-lucide-users' },
-  ]
-})
-
-const columns = [
-  { accessorKey: 'nome', header: 'Nome' },
-  { accessorKey: 'telefone', header: 'Telefone' },
-  { accessorKey: 'email', header: 'E-mail' },
-  { accessorKey: 'actions', header: '' },
-]
-
 const {
+  clientes,
+  stats,
+  search,
   showForm,
   editingId,
   form,
   formLoading,
   openNew,
-  openEdit,
+  editCliente,
   handleSave,
   showDelete,
   deleteLoading,
   openDelete,
   handleDelete,
-} = useCrudDialogs<ClienteForm, Cliente>(
-  { nome: '', telefone: '', email: '' },
-  {
-    apiUrl: '/api/clientes',
-    entityName: 'Cliente',
-    onSaveSuccess: refresh,
-    onDeleteSuccess: refresh,
-  },
-)
-
-function editCliente(cliente: Cliente) {
-  openEdit(cliente, (c: Cliente) => ({
-    nome: c.nome,
-    telefone: c.telefone,
-    email: c.email || '',
-  }))
-}
-
-async function saveCliente() {
-  const body = {
-    nome: form.value.nome,
-    telefone: form.value.telefone,
-    email: form.value.email || undefined,
-  }
-  await handleSave(body)
-}
+} = useClientes()
 </script>
 
 <template>
@@ -110,7 +53,7 @@ async function saveCliente() {
 
         <!-- Table -->
         <UCard v-if="clientes?.length">
-          <UTable :data="clientes" :columns="columns">
+          <UTable :data="clientes" :columns="COLUMNS.clientes">
             <template #nome-cell="{ row }">
               <div class="flex items-center gap-3">
                 <UAvatar :text="getInitials(row.original.nome)" size="sm" />
@@ -145,7 +88,7 @@ async function saveCliente() {
       </div>
 
       <!-- Form dialog -->
-      <FormDialog v-model="showForm" :title="editingId ? 'Editar cliente' : 'Novo cliente'" :loading="formLoading" @save="saveCliente">
+      <FormDialog v-model="showForm" :title="editingId ? 'Editar cliente' : 'Novo cliente'" :loading="formLoading" @save="handleSave">
         <div class="flex flex-col gap-4">
           <UFormField label="Nome" required>
             <UInput v-model="form.nome" placeholder="Nome completo" size="xl" />

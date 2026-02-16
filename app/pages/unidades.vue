@@ -1,121 +1,25 @@
 <script setup lang="ts">
-interface Horario {
-  id?: string
-  diaSemana: number
-  aberto: boolean
-  inicio: string
-  fim: string
-}
-
-interface Unidade {
-  id: string
-  nome: string
-  endereco: string
-  telefone?: string
-  _count?: { barbeiros: number; agendamentos: number }
-}
-
-interface UnidadeForm {
-  nome: string
-  endereco: string
-  telefone: string
-}
-
-const toast = useToast()
-
-const { data: unidades, refresh } = useFetch<Unidade[]>('/api/unidades')
-
 const {
+  unidades,
+  stats,
   showForm,
   editingId,
   form,
   formLoading,
   openNew,
-  openEdit,
+  editUnidade,
+  handleSave,
   showDelete,
   deleteLoading,
   openDelete,
   handleDelete,
-} = useCrudDialogs<UnidadeForm, Unidade>(
-  { nome: '', endereco: '', telefone: '' },
-  {
-    apiUrl: '/api/unidades',
-    entityName: 'Unidade',
-    onSaveSuccess: refresh,
-    onDeleteSuccess: refresh,
-  },
-)
-
-const { loading: saveLoading, save } = useSaveMutation<Unidade>('/api/unidades', {
-  createMessage: 'Unidade criada',
-  updateMessage: 'Unidade atualizada',
-  onSuccess: async () => {
-    showForm.value = false
-    await refresh()
-  },
-})
-
-function editUnidade(unidade: Unidade) {
-  openEdit(unidade, (u: Unidade) => ({
-    nome: u.nome,
-    endereco: u.endereco,
-    telefone: u.telefone || '',
-  }))
-}
-
-async function handleSave() {
-  const body = {
-    nome: form.value.nome,
-    endereco: form.value.endereco,
-    telefone: form.value.telefone || undefined,
-  }
-  await save(editingId.value, body)
-}
-
-// Horarios dialog
-const showHorarios = ref(false)
-const horariosLoading = ref(false)
-const horariosUnidadeId = ref<string | null>(null)
-const horariosUnidadeNome = ref('')
-const horarios = ref<Horario[]>([])
-
-async function openHorarios(unidade: Unidade) {
-  horariosUnidadeId.value = unidade.id
-  horariosUnidadeNome.value = unidade.nome
-  try {
-    const data = await $fetch<Horario[]>(`/api/unidades/${unidade.id}/horarios`)
-    horarios.value = data.length
-      ? data.sort((a, b) => a.diaSemana - b.diaSemana)
-      : Array.from({ length: 7 }, (_, i) => ({
-          diaSemana: i,
-          aberto: i !== 0,
-          inicio: '09:00',
-          fim: '19:00',
-        }))
-    showHorarios.value = true
-  }
-  catch {
-    toast.add({ title: 'Erro ao carregar horários', color: 'error' })
-  }
-}
-
-const { loading: horariosApiLoading, execute: executeHorarios } = useApiMutation({
-  successMessage: 'Horários salvos',
-  errorMessage: 'Erro ao salvar horários',
-})
-
-async function handleSaveHorarios() {
-  if (!horariosUnidadeId.value) return
-  horariosLoading.value = true
-  const result = await executeHorarios(`/api/unidades/${horariosUnidadeId.value}/horarios`, {
-    method: 'PATCH',
-    body: { horarios: horarios.value },
-  })
-  horariosLoading.value = false
-  if (result !== null) {
-    showHorarios.value = false
-  }
-}
+  showHorarios,
+  horariosUnidadeNome,
+  horarios,
+  horariosLoading,
+  openHorarios,
+  handleSaveHorarios,
+} = useUnidades()
 </script>
 
 <template>
@@ -130,7 +34,13 @@ async function handleSaveHorarios() {
       <div class="flex flex-col gap-6 p-6">
         <!-- Stats -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <StatCard label="Total de Unidades" :value="String(unidades?.length || 0)" icon="i-lucide-map-pin" />
+          <StatCard
+            v-for="stat in stats"
+            :key="stat.label"
+            :label="stat.label"
+            :value="stat.value"
+            :icon="stat.icon"
+          />
         </div>
 
         <!-- Units grid -->
@@ -182,7 +92,7 @@ async function handleSaveHorarios() {
       </div>
 
       <!-- Form dialog -->
-      <FormDialog v-model="showForm" :title="editingId ? 'Editar unidade' : 'Nova unidade'" :loading="formLoading || saveLoading" @save="handleSave">
+      <FormDialog v-model="showForm" :title="editingId ? 'Editar unidade' : 'Nova unidade'" :loading="formLoading" @save="handleSave">
         <div class="flex flex-col gap-4">
           <UFormField label="Nome" required>
             <UInput v-model="form.nome" placeholder="Ex: Unidade Centro" size="xl" />
@@ -197,7 +107,7 @@ async function handleSaveHorarios() {
       </FormDialog>
 
       <!-- Horarios dialog -->
-      <FormDialog v-model="showHorarios" :title="`Horários — ${horariosUnidadeNome}`" :loading="horariosLoading || horariosApiLoading" @save="handleSaveHorarios">
+      <FormDialog v-model="showHorarios" :title="`Horários — ${horariosUnidadeNome}`" :loading="horariosLoading" @save="handleSaveHorarios">
         <div class="flex flex-col gap-4">
           <div
             v-for="horario in horarios"
