@@ -111,7 +111,7 @@ async function handleDelete() {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
   <UDashboardPanel>
     <UDashboardNavbar title="Clientes">
       <template #right>
@@ -139,6 +139,7 @@ async function handleDelete() {
             placeholder="Buscar por nome, telefone ou e-mail..."
             icon="i-lucide-search"
             class="w-80"
+            size="xl"
           />
         </div>
       </UCard>
@@ -183,13 +184,13 @@ async function handleDelete() {
     <FormDialog v-model="showForm" :title="editingId ? 'Editar cliente' : 'Novo cliente'" :loading="formLoading" @save="handleSave">
       <div class="flex flex-col gap-4">
         <UFormField label="Nome" required>
-          <UInput v-model="form.nome" placeholder="Nome completo" />
+          <UInput v-model="form.nome" placeholder="Nome completo" size="xl" />
         </UFormField>
         <UFormField label="Telefone" required>
-          <UInput v-model="form.telefone" placeholder="(11) 99999-0000" />
+          <UInput v-model="form.telefone" placeholder="(11) 99999-0000" size="xl" />
         </UFormField>
         <UFormField label="E-mail">
-          <UInput v-model="form.email" type="email" placeholder="email@exemplo.com" />
+          <UInput v-model="form.email" type="email" placeholder="email@exemplo.com" size="xl" />
         </UFormField>
       </div>
     </FormDialog>

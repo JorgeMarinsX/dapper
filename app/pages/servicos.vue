@@ -117,7 +117,7 @@ async function handleDelete() {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
   <UDashboardPanel>
     <UDashboardNavbar title="Serviços">
       <template #right>
@@ -145,6 +145,7 @@ async function handleDelete() {
             placeholder="Buscar serviço..."
             icon="i-lucide-search"
             class="w-80"
+            size="xl"
           />
         </div>
       </UCard>
@@ -189,17 +190,17 @@ async function handleDelete() {
     <FormDialog v-model="showForm" :title="editingId ? 'Editar serviço' : 'Novo serviço'" :loading="formLoading" @save="handleSave">
       <div class="flex flex-col gap-4">
         <UFormField label="Nome" required>
-          <UInput v-model="form.nome" placeholder="Ex: Corte Social" />
+          <UInput v-model="form.nome" placeholder="Ex: Corte Social" size="xl" />
         </UFormField>
         <UFormField label="Descrição">
           <UTextarea v-model="form.descricao" placeholder="Descrição do serviço..." :rows="2" />
         </UFormField>
         <div class="grid grid-cols-2 gap-4">
           <UFormField label="Preço (R$)" required>
-            <UInput v-model.number="form.preco" type="number" :min="0" step="0.01" />
+            <UInput v-model.number="form.preco" type="number" :min="0" step="0.01" size="xl" />
           </UFormField>
           <UFormField label="Duração (min)" required>
-            <UInput v-model.number="form.duracao" type="number" :min="5" step="5" />
+            <UInput v-model.number="form.duracao" type="number" :min="5" step="5" size="xl" />
           </UFormField>
         </div>
       </div>

@@ -54,7 +54,7 @@ function getInitials(name: string): string {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
   <UDashboardPanel>
     <UDashboardNavbar title="Painel" />
 

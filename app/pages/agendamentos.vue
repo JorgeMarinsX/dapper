@@ -182,7 +182,7 @@ function clearFilters() {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
   <UDashboardPanel>
     <UDashboardNavbar title="Agendamentos">
       <template #right>
@@ -210,6 +210,7 @@ function clearFilters() {
             placeholder="Buscar por cliente ou barbeiro..."
             icon="i-lucide-search"
             class="w-64"
+            size="xl"
           />
           <USelect
             v-model="statusFilter"
@@ -231,6 +232,7 @@ function clearFilters() {
             v-model="selectedDate"
             type="date"
             class="w-44"
+            size="xl"
           />
           <UButton
             v-if="search || statusFilter || selectedDate || unidadeFilter"
@@ -344,7 +346,7 @@ function clearFilters() {
             />
           </UFormField>
           <UFormField label="Data e hora" required>
-            <UInput v-model="form.dataHora" type="datetime-local" />
+            <UInput v-model="form.dataHora" type="datetime-local" size="xl" />
           </UFormField>
         </div>
         <UFormField label="Observações">

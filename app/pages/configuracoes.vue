@@ -86,7 +86,7 @@ async function saveNotificacoes() {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
   <UDashboardPanel>
     <UDashboardNavbar title="Configurações" />
 
@@ -102,16 +102,16 @@ async function saveNotificacoes() {
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <UFormField label="Nome">
-            <UInput v-model="shopForm.nome" />
+            <UInput v-model="shopForm.nome" size="xl" />
           </UFormField>
           <UFormField label="CNPJ">
-            <UInput v-model="shopForm.cnpj" />
+            <UInput v-model="shopForm.cnpj" size="xl" />
           </UFormField>
           <UFormField label="Telefone">
-            <UInput v-model="shopForm.telefone" />
+            <UInput v-model="shopForm.telefone" size="xl" />
           </UFormField>
           <UFormField label="Endereço" class="sm:col-span-2">
-            <UInput v-model="shopForm.endereco" />
+            <UInput v-model="shopForm.endereco" size="xl" />
           </UFormField>
         </div>
 
