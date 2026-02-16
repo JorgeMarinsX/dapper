@@ -1,67 +1,20 @@
 <script setup lang="ts">
-interface Servico {
-  id: string
-  nome: string
-  descricao?: string
-  preco: number
-  duracao: number
-}
-
-interface ServicoForm {
-  nome: string
-  descricao: string
-  preco: number
-  duracao: number
-}
-
-const search = ref('')
-
-const { data: servicos, refresh } = useFetch<Servico[]>('/api/servicos', {
-  query: { search },
-})
-
-const stats = computed(() => {
-  const list = servicos.value || []
-  const total = list.length
-  const avgPreco = total ? (list.reduce((s, v) => s + v.preco, 0) / total) : 0
-  const avgDuracao = total ? Math.round(list.reduce((s, v) => s + v.duracao, 0) / total) : 0
-  return [
-    { label: 'Total de Serviços', value: String(total), icon: 'i-lucide-scissors' },
-    { label: 'Preço Médio', value: formatPreco(avgPreco), icon: 'i-lucide-dollar-sign' },
-    { label: 'Duração Média', value: formatDuracao(avgDuracao), icon: 'i-lucide-clock' },
-  ]
-})
-
 const {
+  servicos,
+  stats,
+  search,
   showForm,
   editingId,
   form,
   formLoading,
   openNew,
-  openEdit,
+  editServico,
   handleSave,
   showDelete,
   deleteLoading,
   openDelete,
   handleDelete,
-} = useCrudDialogs<ServicoForm, Servico>(
-  { nome: '', descricao: '', preco: 0, duracao: 30 },
-  {
-    apiUrl: '/api/servicos',
-    entityName: 'Serviço',
-    onSaveSuccess: refresh,
-    onDeleteSuccess: refresh,
-  },
-)
-
-function editServico(servico: Servico) {
-  openEdit(servico, (s: Servico) => ({
-    nome: s.nome,
-    descricao: s.descricao || '',
-    preco: s.preco,
-    duracao: s.duracao,
-  }))
-}
+} = useServicos()
 </script>
 
 <template>

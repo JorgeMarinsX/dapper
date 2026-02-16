@@ -1,87 +1,23 @@
 <script setup lang="ts">
-interface Unidade {
-  id: string
-  nome: string
-}
-
-interface Barbeiro {
-  id: string
-  nome: string
-  email: string
-  telefone: string
-  status: string
-  unidadeId: string
-  unidade: { id: string; nome: string }
-}
-
-interface BarbeiroForm {
-  nome: string
-  email: string
-  telefone: string
-  unidadeId: string
-}
-
-const search = ref('')
-const unidadeFilter = ref('')
-
-const { data: barbeiros, refresh } = useFetch<Barbeiro[]>('/api/barbeiros', {
-  query: { search, unidade: unidadeFilter },
-})
-
-const { data: unidades } = useFetch<Unidade[]>('/api/unidades')
-
-const unidadeOptions = computed(() =>
-  (unidades.value || []).map((u: Unidade) => ({ label: u.nome, value: u.id })),
-)
-
-const columns = [
-  { accessorKey: 'nome', header: 'Nome' },
-  { accessorKey: 'email', header: 'E-mail' },
-  { accessorKey: 'telefone', header: 'Telefone' },
-  { accessorKey: 'unidade', header: 'Unidade' },
-  { accessorKey: 'status', header: 'Status' },
-  { accessorKey: 'actions', header: '' },
-]
-
-const stats = computed(() => {
-  const list = barbeiros.value || []
-  return [
-    { label: 'Total de Barbeiros', value: String(list.length), icon: 'i-lucide-user-round' },
-    { label: 'Disponíveis', value: String(list.filter((b: Barbeiro) => b.status === 'DISPONIVEL').length), icon: 'i-lucide-user-check' },
-    { label: 'Ocupados', value: String(list.filter((b: Barbeiro) => b.status === 'OCUPADO').length), icon: 'i-lucide-user-x' },
-  ]
-})
-
 const {
+  barbeiros,
+  unidades,
+  stats,
+  search,
+  unidadeFilter,
+  unidadeOptions,
   showForm,
   editingId,
   form,
   formLoading,
   openNew,
-  openEdit,
+  editBarbeiro,
   handleSave,
   showDelete,
   deleteLoading,
   openDelete,
   handleDelete,
-} = useCrudDialogs<BarbeiroForm, Barbeiro>(
-  { nome: '', email: '', telefone: '', unidadeId: '' },
-  {
-    apiUrl: '/api/barbeiros',
-    entityName: 'Barbeiro',
-    onSaveSuccess: refresh,
-    onDeleteSuccess: refresh,
-  },
-)
-
-function editBarbeiro(barbeiro: Barbeiro) {
-  openEdit(barbeiro, (b: Barbeiro) => ({
-    nome: b.nome,
-    email: b.email,
-    telefone: b.telefone,
-    unidadeId: b.unidadeId,
-  }))
-}
+} = useBarbeiros()
 </script>
 
 <template>
@@ -128,7 +64,7 @@ function editBarbeiro(barbeiro: Barbeiro) {
 
         <!-- Table -->
         <UCard v-if="barbeiros?.length">
-          <UTable :data="barbeiros" :columns="columns">
+          <UTable :data="barbeiros" :columns="COLUMNS.barbeiros">
             <template #nome-cell="{ row }">
               <div class="flex items-center gap-3">
                 <UAvatar :text="getInitials(row.original.nome)" size="sm" />
@@ -183,7 +119,7 @@ function editBarbeiro(barbeiro: Barbeiro) {
           <UFormField label="Unidade" required>
             <USelect
               v-model="form.unidadeId"
-              :items="(unidades || []).map((u: Unidade) => ({ label: u.nome, value: u.id }))"
+              :items="toSelectOptions(unidades)"
               value-key="value"
               label-key="label"
               placeholder="Selecione a unidade"

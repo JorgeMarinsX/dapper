@@ -69,3 +69,40 @@ export function getStatusConfig(
 ): StatusConfig {
   return statusMap[status] || { label: status, color: 'neutral' }
 }
+
+/**
+ * Table column definitions
+ */
+export const COLUMNS = {
+  agendamentos: [
+    { accessorKey: 'horario', header: 'Horário' },
+    { accessorKey: 'data', header: 'Data' },
+    { accessorKey: 'cliente', header: 'Cliente' },
+    { accessorKey: 'barbeiro', header: 'Barbeiro' },
+    { accessorKey: 'servico', header: 'Serviço' },
+    { accessorKey: 'unidade', header: 'Unidade' },
+    { accessorKey: 'status', header: 'Status' },
+    { accessorKey: 'actions', header: '' },
+  ],
+  barbeiros: [
+    { accessorKey: 'nome', header: 'Nome' },
+    { accessorKey: 'email', header: 'E-mail' },
+    { accessorKey: 'telefone', header: 'Telefone' },
+    { accessorKey: 'unidade', header: 'Unidade' },
+    { accessorKey: 'status', header: 'Status' },
+    { accessorKey: 'actions', header: '' },
+  ],
+  clientes: [
+    { accessorKey: 'nome', header: 'Nome' },
+    { accessorKey: 'telefone', header: 'Telefone' },
+    { accessorKey: 'email', header: 'E-mail' },
+    { accessorKey: 'actions', header: '' },
+  ],
+  dashboard: [
+    { accessorKey: 'horario', header: 'Horário' },
+    { accessorKey: 'cliente', header: 'Cliente' },
+    { accessorKey: 'barbeiro', header: 'Barbeiro' },
+    { accessorKey: 'servico', header: 'Serviço' },
+    { accessorKey: 'status', header: 'Status' },
+  ],
+}

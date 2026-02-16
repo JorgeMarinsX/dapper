@@ -1,49 +1,5 @@
 <script setup lang="ts">
-interface Agendamento {
-  id: string
-  dataHora: string
-  status: string
-  cliente: { nome: string }
-  barbeiro: { nome: string }
-  servico: { nome: string; preco: number }
-}
-
-interface Barbeiro {
-  id: string
-  nome: string
-  status: string
-  unidade?: { nome: string }
-}
-
-const today = getTodayISO()
-
-const { data: agendamentos } = useFetch<Agendamento[]>('/api/agendamentos', {
-  query: { date: today },
-})
-
-const { data: barbeiros } = useFetch<Barbeiro[]>('/api/barbeiros')
-const { data: clientes } = useFetch<{ id: string }[]>('/api/clientes')
-const { data: servicos } = useFetch<{ id: string }[]>('/api/servicos')
-
-const stats = computed(() => {
-  const list = agendamentos.value || []
-  const concluidos = list.filter((a: Agendamento) => a.status === 'CONCLUIDO')
-  const receita = concluidos.reduce((sum: number, a: Agendamento) => sum + (a.servico?.preco || 0), 0)
-  return [
-    { label: 'Agendamentos Hoje', value: String(list.length), icon: 'i-lucide-calendar-check' },
-    { label: 'Receita Hoje', value: formatPreco(receita), icon: 'i-lucide-dollar-sign' },
-    { label: 'Total de Clientes', value: String(clientes.value?.length || 0), icon: 'i-lucide-users' },
-    { label: 'Total de Serviços', value: String(servicos.value?.length || 0), icon: 'i-lucide-scissors' },
-  ]
-})
-
-const columns = [
-  { accessorKey: 'horario', header: 'Horário' },
-  { accessorKey: 'cliente', header: 'Cliente' },
-  { accessorKey: 'barbeiro', header: 'Barbeiro' },
-  { accessorKey: 'servico', header: 'Serviço' },
-  { accessorKey: 'status', header: 'Status' },
-]
+const { agendamentos, barbeiros, stats } = useDashboard()
 </script>
 
 <template>
@@ -74,7 +30,7 @@ const columns = [
               </div>
             </template>
 
-            <UTable v-if="agendamentos?.length" :data="agendamentos" :columns="columns">
+            <UTable v-if="agendamentos?.length" :data="agendamentos" :columns="COLUMNS.dashboard">
               <template #horario-cell="{ row }">
                 {{ formatHorario(row.original.dataHora) }}
               </template>
