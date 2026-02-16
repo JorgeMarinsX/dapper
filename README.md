@@ -161,3 +161,5 @@ Use `text-primary`, `bg-primary`, `border-primary` etc. nos templates — todos 
 - O HMR utiliza polling (`usePolling: true`) porque eventos de file-system não propagam de forma confiável para containers Docker em hosts Windows/macOS
 - O servidor de desenvolvimento faz bind em `0.0.0.0` para ser acessível de fora do container
 - O `node_modules` vive em um volume Docker — **não** dependa de uma pasta `node_modules` local no host
+
+Update: 16 de Fevereiro de 2026
