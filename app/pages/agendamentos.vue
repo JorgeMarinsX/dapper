@@ -148,16 +148,6 @@ const {
       <!-- Form dialog -->
       <FormDialog v-model="showForm" title="Novo agendamento" :loading="formLoading" @save="handleSave">
         <div class="flex flex-col gap-4">
-          <UFormField label="Unidade" required>
-            <USelect
-              v-model="form.unidadeId"
-              :items="unidadeOptions"
-              value-key="value"
-              label-key="label"
-              placeholder="Selecione a unidade"
-            />
-          </UFormField>
-          <div class="grid grid-cols-2 gap-4">
             <UFormField label="Cliente" required>
               <USelect
                 v-model="form.clienteId"
@@ -165,8 +155,20 @@ const {
                 value-key="value"
                 label-key="label"
                 placeholder="Selecione o cliente"
+                class="w-full"
               />
             </UFormField>
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Unidade" required>
+            <USelect
+              v-model="form.unidadeId"
+              :items="unidadeOptions"
+              value-key="value"
+              label-key="label"
+              placeholder="Selecione a unidade"
+              class="w-full"
+            />
+          </UFormField>
             <UFormField label="Barbeiro" required>
               <USelect
                 v-model="form.barbeiroId"
@@ -175,6 +177,7 @@ const {
                 label-key="label"
                 placeholder="Selecione o barbeiro"
                 :disabled="!form.unidadeId"
+                class="w-full"
               />
             </UFormField>
           </div>
@@ -186,14 +189,15 @@ const {
                 value-key="value"
                 label-key="label"
                 placeholder="Selecione o serviço"
+                class="w-full"
               />
             </UFormField>
             <UFormField label="Data e hora" required>
-              <UInput v-model="form.dataHora" type="datetime-local" size="xl" />
+              <UInput v-model="form.dataHora" type="datetime-local" size="xl" class="w-full"/>
             </UFormField>
           </div>
           <UFormField label="Observações">
-            <UTextarea v-model="form.observacoes" placeholder="Observações opcionais..." :rows="2" />
+            <UTextarea v-model="form.observacoes" placeholder="Observações opcionais..." :rows="3" class="w-full" />
           </UFormField>
         </div>
       </FormDialog>

@@ -106,14 +106,14 @@ const {
       <FormDialog v-model="showForm" :title="editingId ? 'Editar barbeiro' : 'Novo barbeiro'" :loading="formLoading" @save="handleSave">
         <div class="flex flex-col gap-4">
           <UFormField label="Nome" required>
-            <UInput v-model="form.nome" placeholder="Nome completo" size="xl" />
+            <UInput v-model="form.nome" placeholder="Nome completo" size="xl" class="w-full"/>
           </UFormField>
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="E-mail" required>
-              <UInput v-model="form.email" type="email" placeholder="email@exemplo.com" size="xl" />
+              <UInput v-model="form.email" type="email" placeholder="email@exemplo.com" size="xl" class="w-full"/>
             </UFormField>
             <UFormField label="Telefone" required>
-              <UInput v-model="form.telefone" placeholder="(11) 99999-0000" size="xl" />
+              <UInput v-model="form.telefone" placeholder="(11) 99999-0000" size="xl" class="w-full" />
             </UFormField>
           </div>
           <UFormField label="Unidade" required>
@@ -123,6 +123,8 @@ const {
               value-key="value"
               label-key="label"
               placeholder="Selecione a unidade"
+              size="xl"
+              class="w-full"
             />
           </UFormField>
         </div>

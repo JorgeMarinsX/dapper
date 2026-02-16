@@ -95,13 +95,13 @@ const {
       <FormDialog v-model="showForm" :title="editingId ? 'Editar unidade' : 'Nova unidade'" :loading="formLoading" @save="handleSave">
         <div class="flex flex-col gap-4">
           <UFormField label="Nome" required>
-            <UInput v-model="form.nome" placeholder="Ex: Unidade Centro" size="xl" />
+            <UInput v-model="form.nome" placeholder="Ex: Unidade Centro" size="xl" class="w-full"/>
           </UFormField>
           <UFormField label="Endereço" required>
-            <UInput v-model="form.endereco" placeholder="Rua, número - Bairro, Cidade - UF" size="xl" />
+            <UInput v-model="form.endereco" placeholder="Rua, número - Bairro, Cidade - UF" size="xl" class="w-full" />
           </UFormField>
           <UFormField label="Telefone">
-            <UInput v-model="form.telefone" placeholder="(11) 99999-0000" size="xl" />
+            <UInput v-model="form.telefone" placeholder="(11) 99999-0000" size="xl" class="w-full" />
           </UFormField>
         </div>
       </FormDialog>
@@ -119,9 +119,9 @@ const {
             </div>
             <USwitch v-model="horario.aberto" />
             <template v-if="horario.aberto">
-              <UInput v-model="horario.inicio" type="time" class="w-28" size="xl" />
+              <UInput v-model="horario.inicio" type="time" class="w-full" size="xl" />
               <span class="text-muted">às</span>
-              <UInput v-model="horario.fim" type="time" class="w-28" size="xl" />
+              <UInput v-model="horario.fim" type="time" class="w-full" size="xl" />
             </template>
             <span v-else class="text-sm text-muted">Fechado</span>
           </div>
