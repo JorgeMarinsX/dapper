@@ -6,6 +6,7 @@ const { login } = useAuth()
 const form = ref({ email: '', senha: '' })
 const loading = ref(false)
 const error = ref('')
+const isFocused = ref(false)
 
 async function handleSubmit() {
   error.value = ''
@@ -25,9 +26,11 @@ async function handleSubmit() {
 
 <template>
   <div class="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4">
-    <div class="w-full max-w-sm">
-      <div class="mb-8 text-center">
-        <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-barber-red-600 text-white">
+    <div class="login-container w-full max-w-sm" :class="{ 'is-focused': isFocused }">
+      <div class="login-glow" aria-hidden="true" />
+
+      <div class="relative mb-8 text-center">
+        <div class="login-logo mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-barber-red-600 text-white">
           <UIcon name="i-lucide-scissors" class="size-7" />
         </div>
         <h1 class="text-2xl font-bold">Dapper</h1>
@@ -35,7 +38,12 @@ async function handleSubmit() {
       </div>
 
       <UCard>
-        <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
+        <form
+          class="flex flex-col gap-4"
+          @submit.prevent="handleSubmit"
+          @focusin="isFocused = true"
+          @focusout="isFocused = false"
+        >
           <UAlert v-if="error" color="error" :title="error" icon="i-lucide-alert-circle" />
 
           <UFormField label="E-mail">
@@ -44,9 +52,9 @@ async function handleSubmit() {
               type="email"
               placeholder="seu@email.com"
               required
-              autofocus
               :disabled="loading"
               class="w-full"
+              size="xl"
             />
           </UFormField>
 
@@ -58,6 +66,7 @@ async function handleSubmit() {
               required
               :disabled="loading"
               class="w-full"
+              size="xl"
             />
           </UFormField>
 
@@ -66,6 +75,7 @@ async function handleSubmit() {
             label="Entrar"
             block
             :loading="loading"
+            size="xl"
           />
         </form>
       </UCard>

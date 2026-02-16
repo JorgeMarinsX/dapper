@@ -75,3 +75,50 @@
   background-size: 30px 60px;
   animation: barber-pole 2s linear infinite;
 }
+
+/* Login glow effect */
+.login-container {
+  position: relative;
+}
+
+.login-glow {
+  position: absolute;
+  inset: -40px -60px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 300px 200px at 50% 75%,
+    rgba(59, 130, 246, 0.25) 0%,
+    rgba(59, 130, 246, 0.1) 30%,
+    transparent 70%
+  );
+  filter: blur(20px);
+  transition:
+    opacity 0.8s ease-out,
+    background 1s ease-out;
+}
+
+.login-container.is-focused .login-glow {
+  opacity: 1;
+  background: radial-gradient(
+    ellipse 280px 300px at 50% 25%,
+    rgba(59, 130, 246, 0.35) 0%,
+    rgba(59, 130, 246, 0.15) 40%,
+    transparent 70%
+  );
+  transition:
+    opacity 0.3s ease-out,
+    background 0.5s ease-out;
+}
+
+.login-logo {
+  position: relative;
+  z-index: 1;
+  transition: filter 0.6s ease-out;
+}
+
+.login-container.is-focused .login-logo {
+  filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.5));
+  transition: filter 0.3s ease-out;
+}
