@@ -122,3 +122,52 @@
   filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.5));
   transition: filter 0.4s ease-out;
 }
+
+/* Login success state */
+.login-success {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: scale(0.98);
+}
+
+.login-glow-success {
+  opacity: 1 !important;
+  background: radial-gradient(
+    ellipse 300px 300px at 50% 40%,
+    rgba(34, 197, 94, 0.3) 0%,
+    rgba(34, 197, 94, 0.1) 40%,
+    transparent 70%
+  ) !important;
+  transition: opacity 0.4s ease-out, background 0.4s ease-out !important;
+}
+
+/* Login icon swap transition */
+.login-icon-enter-active,
+.login-icon-leave-active {
+  transition: all 0.25s ease;
+}
+
+.login-icon-enter-from {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.login-icon-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+/* Login subtitle fade transition */
+.login-fade-enter-active,
+.login-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.login-fade-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.login-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
