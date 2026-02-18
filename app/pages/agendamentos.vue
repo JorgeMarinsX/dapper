@@ -18,6 +18,7 @@ const {
   clienteSearch,
   clienteResults,
   clienteLoading,
+  selectedServico,
   servicoOptions,
   barbeirosOptions,
   updateStatus,
@@ -193,14 +194,18 @@ const {
           </div>
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Serviço" required>
-              <USelect
-                v-model="form.servicoId"
+              <UInputMenu
+                v-model="selectedServico"
                 :items="servicoOptions"
-                value-key="value"
                 label-key="label"
-                placeholder="Selecione o serviço"
+                placeholder="Buscar serviço..."
+                icon="i-lucide-search"
                 class="w-full"
-              />
+              >
+                <template #empty>
+                  <span class="text-muted">Sem resultados</span>
+                </template>
+              </UInputMenu>
             </UFormField>
             <UFormField label="Data e hora" required>
               <UInput v-model="form.dataHora" type="datetime-local" size="xl" class="w-full"/>

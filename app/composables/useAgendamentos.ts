@@ -29,6 +29,13 @@ export function useAgendamentos() {
   const unidadeOptions = useSelectOptions(unidades)
   const servicoOptions = useSelectOptions(servicos)
 
+  // Servico selection for UInputMenu
+  const selectedServico = ref<{ label: string, value: string } | null>(null)
+
+  watch(selectedServico, (val) => {
+    form.value.servicoId = val?.value ?? ''
+  })
+
   // Client search (server-side) for UInputMenu
   const clienteSearch = ref('')
   const selectedCliente = ref<{ label: string, value: string } | null>(null)
@@ -105,6 +112,7 @@ export function useAgendamentos() {
   function openNew() {
     form.value = { ...defaultForm }
     selectedCliente.value = null
+    selectedServico.value = null
     clienteSearch.value = ''
     clienteResults.value = []
     clienteLoading.value = false
@@ -194,6 +202,7 @@ export function useAgendamentos() {
     clienteSearch,
     clienteResults,
     clienteLoading,
+    selectedServico,
     servicoOptions,
     barbeirosOptions,
 
