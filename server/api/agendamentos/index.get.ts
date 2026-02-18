@@ -1,4 +1,5 @@
 import prisma from '../../utils/prisma'
+import { getDayRangeSaoPaulo } from '../../utils/timezone'
 
 export default defineEventHandler(async (event) => {
   const barbeariaId = event.context.barbeariaId
@@ -24,8 +25,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (date) {
-    const start = new Date(`${date}T00:00:00.000Z`)
-    const end = new Date(`${date}T23:59:59.999Z`)
+    const { start, end } = getDayRangeSaoPaulo(date)
     where.dataHora = { gte: start, lte: end }
   }
 

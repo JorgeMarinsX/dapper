@@ -10,6 +10,8 @@ export function getInitials(name: string): string {
     .toUpperCase()
 }
 
+const TIMEZONE = 'America/Sao_Paulo'
+
 /**
  * Format a datetime string to time only (HH:mm)
  */
@@ -17,6 +19,7 @@ export function formatHorario(dataHora: string): string {
   return new Date(dataHora).toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: TIMEZONE,
   })
 }
 
@@ -24,7 +27,9 @@ export function formatHorario(dataHora: string): string {
  * Format a datetime string to date only (DD/MM/YYYY)
  */
 export function formatData(dataHora: string): string {
-  return new Date(dataHora).toLocaleDateString('pt-BR')
+  return new Date(dataHora).toLocaleDateString('pt-BR', {
+    timeZone: TIMEZONE,
+  })
 }
 
 /**
@@ -45,8 +50,15 @@ export function formatDuracao(minutos: number): string {
 }
 
 /**
- * Get today's date in ISO format (YYYY-MM-DD)
+ * Get today's date in ISO format (YYYY-MM-DD) in São Paulo timezone
  */
 export function getTodayISO(): string {
-  return new Date().toISOString().slice(0, 10)
+  const now = new Date()
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+  return parts
 }

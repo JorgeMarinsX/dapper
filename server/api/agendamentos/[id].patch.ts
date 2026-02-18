@@ -1,4 +1,5 @@
 import prisma from '../../utils/prisma'
+import { parseLocalDateTime } from '../../utils/timezone'
 
 export default defineEventHandler(async (event) => {
   const barbeariaId = event.context.barbeariaId
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
   return prisma.agendamento.update({
     where: { id },
     data: {
-      ...(dataHora !== undefined && { dataHora: new Date(dataHora) }),
+      ...(dataHora !== undefined && { dataHora: parseLocalDateTime(dataHora) }),
       ...(status !== undefined && { status }),
       ...(observacoes !== undefined && { observacoes }),
       ...(clienteId !== undefined && { clienteId }),
