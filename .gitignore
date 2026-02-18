@@ -31,3 +31,5 @@ instructions.md
 
 bun.lock
 /app/generated/prisma
+*.md
+!README.md

@@ -49,6 +49,8 @@ const bottomNavItems: NavigationMenuItem[] = [
   },
 ]
 
+const { isDark, toggle: toggleColorMode } = useTheme()
+
 const shopName = computed(() => user.value?.nome || 'Barbearia')
 const shopInitials = computed(() => {
   if (!user.value?.nome) return 'BB'
@@ -81,6 +83,15 @@ const shopMenuItems = [
 
     <template #footer>
       <div class="flex flex-col gap-3">
+        <UButton
+          :icon="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
+          :label="collapsed ? undefined : (isDark ? 'Modo Claro' : 'Modo Escuro')"
+          color="neutral"
+          variant="ghost"
+          class="w-full"
+          :block="collapsed"
+          @click="toggleColorMode"
+        />
         <UDropdownMenu :items="shopMenuItems">
           <UButton
             :label="collapsed ? undefined : shopName"

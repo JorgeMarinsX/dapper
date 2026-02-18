@@ -3,6 +3,12 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui'],
 
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+    storageKey: 'dapper-theme',
+  },
+
   devtools: {
     enabled: true,
   },

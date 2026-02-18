@@ -6,7 +6,7 @@ const { login } = useAuth()
 const form = ref({ email: '', senha: '' })
 const loading = ref(false)
 const error = ref('')
-const isFocused = ref(false)
+
 
 async function handleSubmit() {
   error.value = ''
@@ -26,7 +26,7 @@ async function handleSubmit() {
 
 <template>
   <div class="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4">
-    <div class="login-container w-full max-w-sm" :class="{ 'is-focused': isFocused }">
+    <div class="login-container w-full max-w-sm">
       <div class="login-glow" aria-hidden="true" />
 
       <div class="relative mb-8 text-center">
@@ -41,8 +41,6 @@ async function handleSubmit() {
         <form
           class="flex flex-col gap-4"
           @submit.prevent="handleSubmit"
-          @focusin="isFocused = true"
-          @focusout="isFocused = false"
         >
           <UAlert v-if="error" color="error" :title="error" icon="i-lucide-alert-circle" />
 
