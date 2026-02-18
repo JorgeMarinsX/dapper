@@ -14,7 +14,10 @@ const {
   formLoading,
   openNew,
   handleSave,
-  clienteOptions,
+  selectedCliente,
+  clienteSearch,
+  clienteResults,
+  clienteLoading,
   servicoOptions,
   barbeirosOptions,
   updateStatus,
@@ -149,14 +152,21 @@ const {
       <FormDialog v-model="showForm" title="Novo agendamento" :loading="formLoading" @save="handleSave">
         <div class="flex flex-col gap-4">
             <UFormField label="Cliente" required>
-              <USelect
-                v-model="form.clienteId"
-                :items="clienteOptions"
-                value-key="value"
+              <UInputMenu
+                v-model="selectedCliente"
+                v-model:search-term="clienteSearch"
+                :items="clienteResults"
                 label-key="label"
-                placeholder="Selecione o cliente"
+                :loading="clienteLoading"
+                :ignore-filter="true"
+                placeholder="Digite para buscar cliente..."
+                icon="i-lucide-search"
                 class="w-full"
-              />
+              >
+                <template #empty>
+                  <span class="text-muted">{{ clienteSearch.length < 2 ? 'Digite ao menos 2 caracteres...' : 'Sem resultados' }}</span>
+                </template>
+              </UInputMenu>
             </UFormField>
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Unidade" required>

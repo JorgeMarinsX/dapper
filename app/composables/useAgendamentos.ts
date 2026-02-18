@@ -23,13 +23,47 @@ export function useAgendamentos() {
   })
 
   const { data: unidades } = useFetch<SelectItem[]>('/api/unidades')
-  const { data: clientes } = useFetch<SelectItem[]>('/api/clientes')
   const { data: servicos } = useFetch<SelectItem[]>('/api/servicos')
 
   // Select options
   const unidadeOptions = useSelectOptions(unidades)
-  const clienteOptions = useSelectOptions(clientes)
   const servicoOptions = useSelectOptions(servicos)
+
+  // Client search (server-side) for UInputMenu
+  const clienteSearch = ref('')
+  const selectedCliente = ref<{ label: string, value: string } | null>(null)
+  const clienteResults = ref<{ label: string, value: string }[]>([])
+  const clienteLoading = ref(false)
+  let clienteDebounce: ReturnType<typeof setTimeout> | null = null
+
+  watch(selectedCliente, (val) => {
+    form.value.clienteId = val?.value ?? ''
+  })
+
+  watch(clienteSearch, (term) => {
+    if (clienteDebounce) clearTimeout(clienteDebounce)
+
+    if (!term || term.length < 2) {
+      clienteResults.value = []
+      clienteLoading.value = false
+      return
+    }
+    clienteLoading.value = true
+    clienteDebounce = setTimeout(async () => {
+      try {
+        const data = await $fetch<SelectItem[]>('/api/clientes', {
+          query: { search: term },
+        })
+        clienteResults.value = toSelectOptions(data)
+      }
+      catch {
+        clienteResults.value = []
+      }
+      finally {
+        clienteLoading.value = false
+      }
+    }, 300)
+  })
 
   // Stats
   const stats = computed(() => {
@@ -70,6 +104,10 @@ export function useAgendamentos() {
 
   function openNew() {
     form.value = { ...defaultForm }
+    selectedCliente.value = null
+    clienteSearch.value = ''
+    clienteResults.value = []
+    clienteLoading.value = false
     showForm.value = true
   }
 
@@ -152,7 +190,10 @@ export function useAgendamentos() {
     formLoading,
     openNew,
     handleSave,
-    clienteOptions,
+    selectedCliente,
+    clienteSearch,
+    clienteResults,
+    clienteLoading,
     servicoOptions,
     barbeirosOptions,
 
