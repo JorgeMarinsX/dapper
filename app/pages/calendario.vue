@@ -41,6 +41,7 @@ const {
               label-key="label"
               placeholder="Selecione a unidade"
               class="w-56"
+              size="xl"
             />
             <UInput
               v-model="selectedDate"
@@ -80,41 +81,38 @@ const {
           </button>
         </div>
 
-        <!-- No unit selected -->
-        <UCard v-if="!unidadeFilter">
-          <div class="py-8 text-center text-muted">
+        <!-- Calendar content -->
+        <UCard class="overflow-auto">
+          <!-- No unit selected -->
+          <div v-if="!unidadeFilter" class="py-8 text-center text-muted">
             <UIcon name="i-lucide-building-2" class="mx-auto mb-2 size-8" />
             <p>Selecione uma unidade para visualizar o calendário</p>
           </div>
-        </UCard>
 
-        <!-- Unit closed -->
-        <UCard v-else-if="isClosed">
-          <div class="py-8 text-center text-muted">
+          <!-- Unit closed -->
+          <div v-else-if="isClosed" class="py-8 text-center text-muted">
             <UIcon name="i-lucide-calendar-x" class="mx-auto mb-2 size-8" />
             <p>Unidade fechada neste dia</p>
           </div>
-        </UCard>
 
-        <!-- No operating hours configured -->
-        <UCard v-else-if="!gridHours">
-          <div class="py-8 text-center text-muted">
+          <!-- No operating hours configured -->
+          <div v-else-if="!gridHours" class="py-8 text-center text-muted">
             <UIcon name="i-lucide-clock" class="mx-auto mb-2 size-8" />
             <p>Horários de funcionamento não configurados para esta unidade</p>
           </div>
-        </UCard>
 
-        <!-- Calendar timeline -->
-        <UCard v-else class="overflow-auto">
-          <CalendarTimeline
-            :slots="timelineSlots"
-            :grid-start="gridHours.start"
-            :grid-end="gridHours.end"
-            :current-time-minute="currentTimeMinute"
-          />
-          <div v-if="!timelineSlots.length" class="py-4 text-center text-sm text-muted">
-            Nenhum agendamento para este dia
-          </div>
+          <!-- Calendar timeline -->
+          <template v-else>
+            <CalendarTimeline
+              :slots="timelineSlots"
+              :grid-start="gridHours.start"
+              :grid-end="gridHours.end"
+              :current-time-minute="currentTimeMinute"
+            />
+            <div v-if="!timelineSlots.length" class="py-4 text-center text-sm text-muted">
+              Nenhum agendamento para este dia
+            </div>
+          </template>
         </UCard>
       </div>
     </UDashboardPanel>
