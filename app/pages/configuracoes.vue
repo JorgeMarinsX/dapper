@@ -21,7 +21,7 @@ const requestURL = useRequestURL()
     <UDashboardPanel>
       <UDashboardNavbar title="Configurações" />
 
-      <div class="flex flex-col gap-6 p-6 max-w-4xl">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
         <!-- Dados da Barbearia -->
         <UCard>
           <template #header>
@@ -31,7 +31,7 @@ const requestURL = useRequestURL()
             </div>
           </template>
 
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="grid grid-cols-2 gap-3">
             <UFormField label="Nome">
               <UInput v-model="shopForm.nome" size="xl" />
             </UFormField>
@@ -41,7 +41,7 @@ const requestURL = useRequestURL()
             <UFormField label="Telefone">
               <UInput v-model="shopForm.telefone" size="xl" />
             </UFormField>
-            <UFormField label="Endereço" class="sm:col-span-2">
+            <UFormField label="Endereço">
               <UInput v-model="shopForm.endereco" size="xl" />
             </UFormField>
           </div>
@@ -53,7 +53,7 @@ const requestURL = useRequestURL()
           </template>
         </UCard>
 
-        <!-- Link da Página Pública -->
+        <!-- Página de Agendamento -->
         <UCard>
           <template #header>
             <div class="flex items-center gap-2">
@@ -62,9 +62,9 @@ const requestURL = useRequestURL()
             </div>
           </template>
 
-          <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-3">
             <p class="text-sm text-muted">
-              Compartilhe este link com seus clientes para que eles possam agendar horários online.
+              Compartilhe este link para seus clientes agendarem online.
             </p>
 
             <UFormField label="Slug da sua página">
@@ -92,7 +92,7 @@ const requestURL = useRequestURL()
 
             <div v-if="slugForm" class="rounded-lg bg-elevated p-3">
               <p class="text-xs text-muted mb-1">Link da sua página:</p>
-              <p class="text-sm font-mono font-medium text-primary">
+              <p class="text-sm font-mono font-medium text-primary break-all">
                 {{ `${requestURL.origin}/${slugForm}` }}
               </p>
             </div>
@@ -124,7 +124,7 @@ const requestURL = useRequestURL()
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium">E-mail de confirmação</p>
-                <p class="text-xs text-muted">Enviar e-mail ao cliente quando um agendamento for confirmado</p>
+                <p class="text-xs text-muted">Enviar e-mail ao confirmar agendamento</p>
               </div>
               <USwitch v-model="notificacoes.emailConfirmacao" />
             </div>
@@ -132,22 +132,22 @@ const requestURL = useRequestURL()
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-medium">SMS de lembrete</p>
-                <p class="text-xs text-muted">Enviar SMS de lembrete antes do agendamento</p>
+                <p class="text-xs text-muted">SMS antes do agendamento</p>
               </div>
               <USwitch v-model="notificacoes.smsLembrete" />
             </div>
             <USeparator />
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium">Antecedência do lembrete</p>
-                <p class="text-xs text-muted">Quanto tempo antes do agendamento enviar o lembrete</p>
+                <p class="text-sm font-medium">Antecedência</p>
+                <p class="text-xs text-muted">Tempo antes do lembrete</p>
               </div>
               <USelect
                 v-model="notificacoes.antecedencia"
                 :items="ANTECEDENCIA_OPTIONS"
                 value-key="value"
                 label-key="label"
-                class="w-44"
+                class="w-40"
               />
             </div>
           </div>

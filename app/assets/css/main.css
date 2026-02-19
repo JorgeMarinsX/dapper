@@ -37,6 +37,7 @@
   --ui-primary: var(--color-dapper-400);
 }
 
+
 /* Page transitions */
 .page-enter-active,
 .page-leave-active {
