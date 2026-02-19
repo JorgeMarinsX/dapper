@@ -85,3 +85,40 @@ export interface NotificacaoConfig {
   smsLembrete: boolean
   antecedencia: number
 }
+
+// Public booking page types
+export interface BarbeariaPublica {
+  id: string
+  nome: string
+  slug: string
+  unidades: UnidadePublica[]
+}
+
+export interface UnidadePublica {
+  id: string
+  nome: string
+  endereco: string
+}
+
+export interface ServicoPublico {
+  id: string
+  nome: string
+  preco: number
+  duracao: number
+}
+
+export interface BarbeiroPublico {
+  id: string
+  nome: string
+  foto: string | null
+}
+
+export interface AgendamentoConfirmado {
+  id: string
+  dataHora: string
+  status: string
+  cliente: { nome: string; telefone: string }
+  barbeiro: { nome: string }
+  servico: { nome: string; preco: number; duracao: number }
+  unidade: { nome: string }
+}

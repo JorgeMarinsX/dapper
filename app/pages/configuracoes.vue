@@ -3,10 +3,17 @@ const {
   shopForm,
   shopLoading,
   saveShop,
+  slugForm,
+  slugAvailable,
+  slugChecking,
+  slugLoading,
+  saveSlug,
   notificacoes,
   notifLoading,
   saveNotificacoes,
 } = useConfiguracoes()
+
+const requestURL = useRequestURL()
 </script>
 
 <template>
@@ -42,6 +49,64 @@ const {
           <template #footer>
             <div class="flex justify-end">
               <UButton label="Salvar alterações" icon="i-lucide-save" :loading="shopLoading" @click="saveShop" />
+            </div>
+          </template>
+        </UCard>
+
+        <!-- Link da Página Pública -->
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-link" class="size-5 text-primary" />
+              <h2 class="font-semibold">Página de Agendamento</h2>
+            </div>
+          </template>
+
+          <div class="flex flex-col gap-4">
+            <p class="text-sm text-muted">
+              Compartilhe este link com seus clientes para que eles possam agendar horários online.
+            </p>
+
+            <UFormField label="Slug da sua página">
+              <UInput v-model="slugForm" size="xl" placeholder="minha-barbearia">
+                <template #leading>
+                  <span class="text-xs text-muted pl-1">/</span>
+                </template>
+              </UInput>
+            </UFormField>
+
+            <div class="flex items-center gap-2 text-sm">
+              <template v-if="slugChecking">
+                <UIcon name="i-lucide-loader-2" class="size-4 animate-spin text-muted" />
+                <span class="text-muted">Verificando disponibilidade...</span>
+              </template>
+              <template v-else-if="slugAvailable === true">
+                <UIcon name="i-lucide-check-circle" class="size-4 text-green-500" />
+                <span class="text-green-500">Slug disponível</span>
+              </template>
+              <template v-else-if="slugAvailable === false">
+                <UIcon name="i-lucide-x-circle" class="size-4 text-red-500" />
+                <span class="text-red-500">Slug já em uso</span>
+              </template>
+            </div>
+
+            <div v-if="slugForm" class="rounded-lg bg-elevated p-3">
+              <p class="text-xs text-muted mb-1">Link da sua página:</p>
+              <p class="text-sm font-mono font-medium text-primary">
+                {{ `${requestURL.origin}/${slugForm}` }}
+              </p>
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end">
+              <UButton
+                label="Salvar link"
+                icon="i-lucide-save"
+                :loading="slugLoading"
+                :disabled="slugAvailable === false || slugChecking || !slugForm || slugForm.length < 3"
+                @click="saveSlug"
+              />
             </div>
           </template>
         </UCard>

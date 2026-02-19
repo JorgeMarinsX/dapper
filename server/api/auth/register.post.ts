@@ -1,5 +1,6 @@
 import prisma from '../../utils/prisma'
 import { hashPassword, signToken, setAuthCookie } from '../../utils/auth'
+import { generateUniqueSlug } from '../../utils/slugify'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -15,10 +16,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const hashedPassword = await hashPassword(senha)
+  const slug = await generateUniqueSlug(prisma, nome)
 
   const barbearia = await prisma.barbearia.create({
     data: {
       nome,
+      slug,
       email,
       senha: hashedPassword,
       cnpj,

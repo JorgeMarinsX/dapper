@@ -1,6 +1,7 @@
 interface Barbearia {
   id: string
   nome: string
+  slug: string
   email: string
   cnpj: string
   telefone: string

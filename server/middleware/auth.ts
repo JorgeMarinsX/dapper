@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
 
   if (!path.startsWith('/api/')) return
   if (PUBLIC_ROUTES.includes(path)) return
+  if (path.startsWith('/api/public/')) return
 
   const token = getAuthCookie(event)
   if (!token) {
