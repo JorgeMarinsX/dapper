@@ -1,5 +1,6 @@
 import prisma from '../../utils/prisma'
 import { parseLocalDateTime } from '../../utils/timezone'
+import { checkBusinessHours, checkConflict } from '../../utils/agendamento-validators'
 
 export default defineEventHandler(async (event) => {
   const barbeariaId = event.context.barbeariaId
@@ -28,9 +29,14 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Barbeiro não pertence à unidade selecionada' })
   }
 
+  // Validate business hours and barber availability
+  const startUTC = parseLocalDateTime(dataHora)
+  await checkBusinessHours(prisma, unidadeId, startUTC, servico.duracao)
+  await checkConflict(prisma, barbeiroId, startUTC, servico.duracao)
+
   return prisma.agendamento.create({
     data: {
-      dataHora: parseLocalDateTime(dataHora),
+      dataHora: startUTC,
       observacoes,
       clienteId,
       barbeiroId,
