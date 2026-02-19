@@ -15,6 +15,11 @@ const navItems: NavigationMenuItem[] = [
     to: '/agendamentos',
   },
   {
+    label: 'Calendário',
+    icon: 'i-lucide-calendar-days',
+    to: '/calendario',
+  },
+  {
     label: 'Barbeiros',
     icon: 'i-lucide-user-round',
     to: '/barbeiros',

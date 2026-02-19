@@ -17,7 +17,7 @@ export interface Agendamento {
   observacoes?: string
   cliente: { id: string; nome: string }
   barbeiro: { id: string; nome: string }
-  servico: { id: string; nome: string; preco: number }
+  servico: { id: string; nome: string; preco: number; duracao: number }
   unidade: { id: string; nome: string }
 }
 
@@ -67,6 +67,16 @@ export interface Horario {
   aberto: boolean
   inicio: string
   fim: string
+}
+
+// Calendar timeline slot (reusable component data)
+export interface TimelineSlot {
+  id: string
+  startMinute: number
+  durationMinutes: number
+  label: string
+  sublabel?: string
+  color: { bg: string; text: string; border: string }
 }
 
 // Notificacao config (for settings page)

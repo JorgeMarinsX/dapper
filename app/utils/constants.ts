@@ -61,6 +61,30 @@ export const ANTECEDENCIA_OPTIONS = [
 ]
 
 /**
+ * Color palette for barbers in calendar view
+ */
+export const BARBEIRO_COLORS = [
+  { bg: 'bg-blue-100 dark:bg-blue-900', text: 'text-blue-800 dark:text-blue-200', border: 'border-blue-500' },
+  { bg: 'bg-emerald-100 dark:bg-emerald-900', text: 'text-emerald-800 dark:text-emerald-200', border: 'border-emerald-500' },
+  { bg: 'bg-amber-100 dark:bg-amber-900', text: 'text-amber-800 dark:text-amber-200', border: 'border-amber-500' },
+  { bg: 'bg-purple-100 dark:bg-purple-900', text: 'text-purple-800 dark:text-purple-200', border: 'border-purple-500' },
+  { bg: 'bg-rose-100 dark:bg-rose-900', text: 'text-rose-800 dark:text-rose-200', border: 'border-rose-500' },
+  { bg: 'bg-cyan-100 dark:bg-cyan-900', text: 'text-cyan-800 dark:text-cyan-200', border: 'border-cyan-500' },
+  { bg: 'bg-orange-100 dark:bg-orange-900', text: 'text-orange-800 dark:text-orange-200', border: 'border-orange-500' },
+  { bg: 'bg-indigo-100 dark:bg-indigo-900', text: 'text-indigo-800 dark:text-indigo-200', border: 'border-indigo-500' },
+]
+
+export function getBarbeiroColor(index: number) {
+  return BARBEIRO_COLORS[index % BARBEIRO_COLORS.length]
+}
+
+/**
+ * Calendar timeline constants
+ */
+export const TIMELINE_ROW_HEIGHT = 48
+export const TIMELINE_SLOT_INTERVAL = 30
+
+/**
  * Get status config with fallback
  */
 export function getStatusConfig(

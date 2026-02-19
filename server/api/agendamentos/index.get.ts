@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     include: {
       cliente: { select: { id: true, nome: true } },
       barbeiro: { select: { id: true, nome: true } },
-      servico: { select: { id: true, nome: true, preco: true } },
+      servico: { select: { id: true, nome: true, preco: true, duracao: true } },
       unidade: { select: { id: true, nome: true } },
     },
     orderBy: { dataHora: 'asc' },
