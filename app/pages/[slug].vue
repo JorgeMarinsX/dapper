@@ -19,6 +19,15 @@ const canGoBack = computed(() => {
   if (step.value <= 1 || step.value >= 6) return false
   return !(step.value === 2 && barbearia.value?.unidades.length === 1)
 })
+
+import { useConsultaAgendamentos } from '~/composables/useConsultaAgendamentos'
+
+const { agendamentos: agendamentosConsulta, loading: consultaLoading, error: consultaError, consultarPorEmail, limpar: limparConsulta } = useConsultaAgendamentos()
+const emailConsulta = ref('')
+
+function onConsultar() {
+  consultarPorEmail(emailConsulta.value)
+}
 </script>
 
 <template>

@@ -8,7 +8,6 @@ const { agendamentos, barbeiros, stats } = useDashboard()
       <UDashboardNavbar title="Painel" />
 
       <div class="flex flex-col gap-6 p-6">
-        <!-- Stats -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             v-for="stat in stats"
@@ -19,9 +18,7 @@ const { agendamentos, barbeiros, stats } = useDashboard()
           />
         </div>
 
-        <!-- Main content: Appointments + Barbers -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <!-- Appointments table -->
           <UCard class="lg:col-span-2">
             <template #header>
               <div class="flex items-center justify-between">
@@ -55,8 +52,7 @@ const { agendamentos, barbeiros, stats } = useDashboard()
               <p>Nenhum agendamento hoje</p>
             </div>
           </UCard>
-
-          <!-- Barber availability -->
+          
           <UCard>
             <template #header>
               <h2 class="font-semibold">Barbeiros</h2>
