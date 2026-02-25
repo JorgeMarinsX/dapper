@@ -8,6 +8,9 @@ export default defineEventHandler(async (event) => {
   const status = (query.status as string) || ''
   const date = (query.date as string) || ''
   const unidadeId = query.unidade as string | undefined
+  const page = Math.max(1, Number(query.page) || 1)
+  const limit = Math.min(100, Math.max(1, Number(query.limit) || 20))
+  const skip = (page - 1) * limit
 
   const where: any = { barbeariaId }
 
@@ -29,14 +32,40 @@ export default defineEventHandler(async (event) => {
     where.dataHora = { gte: start, lte: end }
   }
 
-  return prisma.agendamento.findMany({
-    where,
-    include: {
-      cliente: { select: { id: true, nome: true } },
-      barbeiro: { select: { id: true, nome: true } },
-      servico: { select: { id: true, nome: true, preco: true, duracao: true } },
-      unidade: { select: { id: true, nome: true } },
-    },
-    orderBy: { dataHora: 'asc' },
-  })
+  // Stats where: same filters but without status (so stats reflect all statuses)
+  const { status: _excludedStatus, ...statsWhere } = where
+
+  const [data, total, statsTotal, concluidos, aguardando, cancelados] = await Promise.all([
+    prisma.agendamento.findMany({
+      where,
+      include: {
+        cliente: { select: { id: true, nome: true } },
+        barbeiro: { select: { id: true, nome: true } },
+        servico: { select: { id: true, nome: true, preco: true, duracao: true } },
+        unidade: { select: { id: true, nome: true } },
+      },
+      orderBy: { dataHora: 'asc' },
+      skip,
+      take: limit,
+    }),
+    prisma.agendamento.count({ where }),
+    prisma.agendamento.count({ where: statsWhere }),
+    prisma.agendamento.count({ where: { ...statsWhere, status: 'CONCLUIDO' } }),
+    prisma.agendamento.count({ where: { ...statsWhere, status: 'AGUARDANDO' } }),
+    prisma.agendamento.count({ where: { ...statsWhere, status: 'CANCELADO' } }),
+  ])
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+    stats: [
+      { label: 'Total', value: String(statsTotal), icon: 'i-lucide-calendar' },
+      { label: 'Concluídos', value: String(concluidos), icon: 'i-lucide-calendar-check' },
+      { label: 'Aguardando', value: String(aguardando), icon: 'i-lucide-clock' },
+      { label: 'Cancelados', value: String(cancelados), icon: 'i-lucide-calendar-x' },
+    ],
+  }
 })

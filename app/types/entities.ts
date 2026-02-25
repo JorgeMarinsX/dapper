@@ -3,6 +3,15 @@ export interface WithId {
   id: string
 }
 
+// Paginated API response wrapper
+export interface PaginatedResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
 // Select item for dropdowns
 export interface SelectItem {
   id: string

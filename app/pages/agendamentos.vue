@@ -2,6 +2,9 @@
 const {
   agendamentos,
   stats,
+  page,
+  totalPages,
+  total,
   search,
   statusFilter,
   selectedDate,
@@ -41,14 +44,14 @@ const today = getTodayISO()
 
 <template>
   <div class="w-full">
-    <UDashboardPanel>
+    <UDashboardPanel class="flex flex-col">
       <UDashboardNavbar title="Agendamentos">
         <template #right>
           <UButton label="Novo agendamento" icon="i-lucide-plus" @click="openNew" />
         </template>
       </UDashboardNavbar>
 
-      <div class="flex flex-col gap-6 p-6">
+      <div class="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
         <!-- Stats -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
@@ -151,7 +154,31 @@ const today = getTodayISO()
           </UTable>
         </UCard>
 
-        <UCard v-else>
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="flex items-center justify-between">
+          <span class="text-sm text-muted">{{ total }} agendamento{{ total !== 1 ? 's' : '' }}</span>
+          <div class="flex items-center gap-2">
+            <UButton
+              icon="i-lucide-chevron-left"
+              variant="outline"
+              color="neutral"
+              size="xs"
+              :disabled="page <= 1"
+              @click="page--"
+            />
+            <span class="text-sm">Página {{ page }} de {{ totalPages }}</span>
+            <UButton
+              icon="i-lucide-chevron-right"
+              variant="outline"
+              color="neutral"
+              size="xs"
+              :disabled="page >= totalPages"
+              @click="page++"
+            />
+          </div>
+        </div>
+
+        <UCard v-else-if="!agendamentos?.length">
           <div class="py-8 text-center text-muted">
             <UIcon name="i-lucide-calendar" class="mx-auto mb-2 size-8" />
             <p>Nenhum agendamento encontrado</p>

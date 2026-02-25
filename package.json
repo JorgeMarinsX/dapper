@@ -19,6 +19,9 @@
     "vue": "^3",
     "vue-router": "^4"
   },
+  "prisma": {
+    "seed": "bun prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/bcrypt": "^5",
     "prisma": "6.10.0",

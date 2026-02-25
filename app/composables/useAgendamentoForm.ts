@@ -71,10 +71,10 @@ export function useAgendamentoForm(onSaved: () => Promise<void>) {
     clienteLoading.value = true
     clienteDebounce = setTimeout(async () => {
       try {
-        const data = await $fetch<SelectItem[]>('/api/clientes', {
+        const response = await $fetch<{ data: SelectItem[] }>('/api/clientes', {
           query: { search: term },
         })
-        clienteResults.value = toSelectOptions(data)
+        clienteResults.value = toSelectOptions(response.data)
       }
       catch {
         clienteResults.value = []

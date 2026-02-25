@@ -1,4 +1,12 @@
-import type { Agendamento } from '~/types/entities'
+import type { Agendamento, PaginatedResponse } from '~/types/entities'
+
+interface AgendamentoStats {
+  label: string
+  value: string
+  icon: string
+}
+
+type AgendamentosResponse = PaginatedResponse<Agendamento> & { stats: AgendamentoStats[] }
 
 export function useAgendamentos() {
   // Filters
@@ -7,21 +15,24 @@ export function useAgendamentos() {
   const selectedDate = ref(getTodayISO())
   const unidadeFilter = ref('')
 
-  // Data fetching
-  const { data: agendamentos, refresh } = useFetch<Agendamento[]>('/api/agendamentos', {
-    query: { search, status: statusFilter, date: selectedDate, unidade: unidadeFilter },
+  // Pagination
+  const page = ref(1)
+  const limit = ref(20)
+
+  // Reset page when filters change
+  watch([search, statusFilter, selectedDate, unidadeFilter], () => {
+    page.value = 1
   })
 
-  // Stats
-  const stats = computed(() => {
-    const list = agendamentos.value || []
-    return [
-      { label: 'Total', value: String(list.length), icon: 'i-lucide-calendar' },
-      { label: 'Concluídos', value: String(list.filter(a => a.status === 'CONCLUIDO').length), icon: 'i-lucide-calendar-check' },
-      { label: 'Aguardando', value: String(list.filter(a => a.status === 'AGUARDANDO').length), icon: 'i-lucide-clock' },
-      { label: 'Cancelados', value: String(list.filter(a => a.status === 'CANCELADO').length), icon: 'i-lucide-calendar-x' },
-    ]
+  // Data fetching
+  const { data: response, refresh } = useFetch<AgendamentosResponse>('/api/agendamentos', {
+    query: { search, status: statusFilter, date: selectedDate, unidade: unidadeFilter, page, limit },
   })
+
+  const agendamentos = computed(() => response.value?.data || [])
+  const stats = computed(() => response.value?.stats || [])
+  const totalPages = computed(() => response.value?.totalPages || 1)
+  const total = computed(() => response.value?.total || 0)
 
   // Form (delegated to useAgendamentoForm)
   const formState = useAgendamentoForm(() => refresh())
@@ -72,6 +83,11 @@ export function useAgendamentos() {
     // Data
     agendamentos,
     stats,
+
+    // Pagination
+    page,
+    totalPages,
+    total,
 
     // Filters
     search,

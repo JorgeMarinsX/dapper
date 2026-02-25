@@ -1,4 +1,4 @@
-import type { Cliente } from '~/types/entities'
+import type { Cliente, PaginatedResponse } from '~/types/entities'
 import type { ClienteForm } from '~/types/forms'
 
 const defaultForm: ClienteForm = {
@@ -11,14 +11,27 @@ export function useClientes() {
   // Filters
   const search = ref('')
 
-  // Data fetching
-  const { data: clientes, refresh } = useFetch<Cliente[]>('/api/clientes', {
-    query: { search },
+  // Pagination
+  const page = ref(1)
+  const limit = ref(20)
+
+  // Reset page when search changes
+  watch(search, () => {
+    page.value = 1
   })
+
+  // Data fetching
+  const { data: response, refresh } = useFetch<PaginatedResponse<Cliente>>('/api/clientes', {
+    query: { search, page, limit },
+  })
+
+  const clientes = computed(() => response.value?.data || [])
+  const totalPages = computed(() => response.value?.totalPages || 1)
+  const total = computed(() => response.value?.total || 0)
 
   // Stats
   const stats = computed(() => [
-    { label: 'Total de Clientes', value: String(clientes.value?.length || 0), icon: 'i-lucide-users' },
+    { label: 'Total de Clientes', value: String(total.value), icon: 'i-lucide-users' },
   ])
 
   // CRUD dialogs
@@ -73,6 +86,11 @@ export function useClientes() {
     // Data
     clientes,
     stats,
+
+    // Pagination
+    page,
+    totalPages,
+    total,
 
     // Filters
     search,

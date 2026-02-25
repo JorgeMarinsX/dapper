@@ -23,6 +23,7 @@ services:
   db:
     image: postgres:16-alpine
     container_name: dapper_postgres
+    command: postgres -c config_file=/etc/postgresql/custom.conf
     environment:
       POSTGRES_USER: dapper
       POSTGRES_PASSWORD: dapper123
@@ -31,6 +32,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres/custom.conf:/etc/postgresql/custom.conf:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dapper"]
       interval: 5s
