@@ -12,7 +12,7 @@ services:
     command: sh -c "bun install --no-fork && bunx prisma generate && bunx prisma migrate deploy && bun --no-fork run dev"
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://dapper:dapper123@db:5432/dapper
+      - DATABASE_URL=postgresql://dapper:dapper123@db:5432/dapper?connection_limit=20
       - CHOKIDAR_USEPOLLING=true
       - JWT_SECRET=dapper-dev-secret-change-in-production
     depends_on:

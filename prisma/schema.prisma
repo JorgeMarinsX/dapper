@@ -121,6 +121,8 @@ model Agendamento {
   @@index([clienteId])
   @@index([barbeiroId])
   @@index([dataHora])
+  @@index([barbeiroId, dataHora])
+  @@index([barbeariaId, dataHora])
 }
 
 model HorarioFuncionamento {
