@@ -20,7 +20,7 @@ export function useCalendario() {
 
   // Operating hours for selected unit
   const { data: horarios } = useFetch<Horario[]>(() =>
-    unidadeFilter.value ? `/api/unidades/${unidadeFilter.value}/horarios` : '',
+    unidadeFilter.value ? `/api/unidades/${unidadeFilter.value}/horarios` : null,
   )
 
   // Day of week for the selected date (0=Sunday)

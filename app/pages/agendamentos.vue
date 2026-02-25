@@ -21,11 +21,22 @@ const {
   selectedServico,
   servicoOptions,
   barbeirosOptions,
+  formDate,
+  selectedSlot,
+  availableSlots,
+  slotsLoading,
+  selectSlot,
+  showClienteForm,
+  showBarbeiroForm,
+  onClienteCreated,
+  onBarbeiroCreated,
   updateStatus,
   deleteDialog,
   deleteLoading,
   handleDelete,
 } = useAgendamentos()
+
+const today = getTodayISO()
 </script>
 
 <template>
@@ -152,7 +163,8 @@ const {
       <!-- Form dialog -->
       <FormDialog v-model="showForm" title="Novo agendamento" :loading="formLoading" @save="handleSave">
         <div class="flex flex-col gap-4">
-            <UFormField label="Cliente" required>
+          <UFormField label="Cliente" required>
+            <div class="flex items-end gap-2">
               <UInputMenu
                 v-model="selectedCliente"
                 v-model:search-term="clienteSearch"
@@ -162,37 +174,26 @@ const {
                 :ignore-filter="true"
                 placeholder="Digite para buscar cliente..."
                 icon="i-lucide-search"
-                class="w-full"
+                class="flex-1"
               >
                 <template #empty>
                   <span class="text-muted">{{ clienteSearch.length < 2 ? 'Digite ao menos 2 caracteres...' : 'Sem resultados' }}</span>
                 </template>
               </UInputMenu>
-            </UFormField>
+              <UButton icon="i-lucide-plus" variant="outline" color="neutral" @click="showClienteForm = true" />
+            </div>
+          </UFormField>
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Unidade" required>
-            <USelect
-              v-model="form.unidadeId"
-              :items="unidadeOptions"
-              value-key="value"
-              label-key="label"
-              placeholder="Selecione a unidade"
-              class="w-full"
-            />
-          </UFormField>
-            <UFormField label="Barbeiro" required>
               <USelect
-                v-model="form.barbeiroId"
-                :items="barbeirosOptions"
+                v-model="form.unidadeId"
+                :items="unidadeOptions"
                 value-key="value"
                 label-key="label"
-                placeholder="Selecione o barbeiro"
-                :disabled="!form.unidadeId"
+                placeholder="Selecione a unidade"
                 class="w-full"
               />
             </UFormField>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
             <UFormField label="Serviço" required>
               <UInputMenu
                 v-model="selectedServico"
@@ -207,9 +208,53 @@ const {
                 </template>
               </UInputMenu>
             </UFormField>
-            <UFormField label="Data e hora" required>
-              <UInput v-model="form.dataHora" type="datetime-local" size="xl" class="w-full"/>
-            </UFormField>
+          </div>
+          <UFormField label="Barbeiro" required>
+            <div class="flex items-end gap-2">
+              <USelect
+                v-model="form.barbeiroId"
+                :items="barbeirosOptions"
+                value-key="value"
+                label-key="label"
+                placeholder="Selecione o barbeiro"
+                :disabled="!form.unidadeId"
+                class="flex-1"
+              />
+              <UButton icon="i-lucide-plus" variant="outline" color="neutral" :disabled="!form.unidadeId" @click="showBarbeiroForm = true" />
+            </div>
+          </UFormField>
+          <UFormField label="Data" required>
+            <UInput
+              v-model="formDate"
+              type="date"
+              :min="today"
+              size="xl"
+              class="w-full"
+              :disabled="!form.unidadeId || !form.barbeiroId || !form.servicoId"
+            />
+          </UFormField>
+          <div v-if="!form.unidadeId || !form.barbeiroId || !form.servicoId" class="text-sm text-muted">
+            Selecione unidade, barbeiro e serviço para ver horários disponíveis.
+          </div>
+          <div v-else-if="formDate">
+            <p class="text-sm font-medium mb-2">Horários disponíveis:</p>
+            <div v-if="slotsLoading" class="flex justify-center py-4">
+              <UIcon name="i-lucide-loader-2" class="size-6 animate-spin text-muted" />
+            </div>
+            <div v-else-if="availableSlots.length > 0" class="flex flex-wrap gap-2">
+              <UButton
+                v-for="s in availableSlots"
+                :key="s"
+                :label="s"
+                :variant="selectedSlot === s ? 'solid' : 'outline'"
+                :color="selectedSlot === s ? 'primary' : 'neutral'"
+                size="md"
+                @click="selectSlot(s)"
+              />
+            </div>
+            <p v-else class="text-sm text-muted text-center py-4">
+              Nenhum horário disponível nesta data.
+            </p>
           </div>
           <UFormField label="Observações">
             <UTextarea v-model="form.observacoes" placeholder="Observações opcionais..." :rows="3" class="w-full" />
@@ -219,6 +264,10 @@ const {
 
       <!-- Delete confirmation -->
       <ConfirmDialog v-model="deleteDialog.show.value" :loading="deleteLoading" @confirm="handleDelete" />
+
+      <!-- Quick-create dialogs -->
+      <QuickCreateCliente v-model="showClienteForm" @created="onClienteCreated" />
+      <QuickCreateBarbeiro v-model="showBarbeiroForm" :unidade-id="form.unidadeId" :unidade-options="unidadeOptions" @created="onBarbeiroCreated" />
     </UDashboardPanel>
   </div>
 </template>
