@@ -20,13 +20,23 @@ const canGoBack = computed(() => {
   return !(step.value === 2 && barbearia.value?.unidades.length === 1)
 })
 
-import { useConsultaAgendamentos } from '~/composables/useConsultaAgendamentos'
-
-const { agendamentos: agendamentosConsulta, loading: consultaLoading, error: consultaError, consultarPorEmail, limpar: limparConsulta } = useConsultaAgendamentos()
+const {
+  agendamentos: agendamentosConsulta,
+  loading: consultaLoading,
+  error: consultaError,
+  searched: consultaSearched,
+  consultarPorEmail,
+  limpar: limparConsulta,
+} = useConsultaAgendamentos(slug)
 const emailConsulta = ref('')
 
 function onConsultar() {
   consultarPorEmail(emailConsulta.value)
+}
+
+function onLimparConsulta() {
+  emailConsulta.value = ''
+  limparConsulta()
 }
 </script>
 
@@ -63,6 +73,19 @@ function onConsultar() {
       <div v-if="loading && step < 4" class="flex justify-center py-8">
         <UIcon name="i-lucide-loader-2" class="size-6 animate-spin text-muted" />
       </div>
+
+      <!-- Appointment lookup section -->
+      <USeparator class="my-8" />
+
+      <BookingConsultaAgendamentos
+        v-model:email="emailConsulta"
+        :agendamentos="agendamentosConsulta"
+        :loading="consultaLoading"
+        :error="consultaError"
+        :searched="consultaSearched"
+        @consultar="onConsultar"
+        @limpar="onLimparConsulta"
+      />
     </template>
   </div>
 </template>

@@ -122,3 +122,13 @@ export interface AgendamentoConfirmado {
   servico: { nome: string; preco: number; duracao: number }
   unidade: { nome: string }
 }
+
+export interface AgendamentoConsulta {
+  id: string
+  dataHora: string
+  status: string
+  cliente: { nome: string; email: string | null }
+  barbeiro: { nome: string }
+  servico: { nome: string; preco: number; duracao: number }
+  unidade: { nome: string }
+}
