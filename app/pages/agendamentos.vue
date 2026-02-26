@@ -43,15 +43,15 @@ const today = getTodayISO()
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full overflow-y-auto">
     <UDashboardPanel class="flex flex-col">
-      <UDashboardNavbar title="Agendamentos">
+      <UDashboardNavbar title="Agendamentos" class="sticky top-0">
         <template #right>
           <UButton label="Novo agendamento" icon="i-lucide-plus" @click="openNew" />
         </template>
       </UDashboardNavbar>
 
-      <div class="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
+      <div class="flex min-h-0 flex-1 flex-col gap-6 p-6">
         <!-- Stats -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard

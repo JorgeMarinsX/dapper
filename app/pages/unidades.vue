@@ -23,7 +23,7 @@ const {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full overflow-y-auto">
     <UDashboardPanel>
       <UDashboardNavbar title="Unidades">
         <template #right>

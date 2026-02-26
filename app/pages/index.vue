@@ -3,7 +3,7 @@ const { agendamentos, barbeiros, stats } = useDashboard()
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full overflow-y-auto">
     <UDashboardPanel>
       <UDashboardNavbar title="Painel" />
 

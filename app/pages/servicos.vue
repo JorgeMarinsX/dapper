@@ -18,7 +18,7 @@ const {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full overflow-y-auto">
     <UDashboardPanel>
       <UDashboardNavbar title="Serviços">
         <template #right>
